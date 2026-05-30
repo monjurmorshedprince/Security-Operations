@@ -1,584 +1,1035 @@
-<!--
-    File: index.html
-    Purpose: Developer portfolio main page
-    Signed by: serozr
-    Date: 2025-10-16
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>serozr | Developer Portfolio</title>
-    <meta name="description" content="Modern developer portfolio with terminal-inspired design">
-    <meta name="author" content="serozr">
-    <link rel="stylesheet" href="src/css/main.css">
-    <link rel="stylesheet" href="src/css/animations.css">
+    <title>Monjur Morshed | Ethical Hacker & Flutter Developer</title>
+    <meta name="description" content="Ethical Hacker, SOC Analyst & Flutter Developer based in Dhaka, Bangladesh">
+    <meta name="author" content="Monjur Morshed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030b0f;
+            --bg2: #071219;
+            --panel: #0a1a24;
+            --border: #0e4a6e;
+            --accent: #00d4ff;
+            --accent2: #00ff88;
+            --accent3: #ff4d6d;
+            --text: #cce8f0;
+            --muted: #4a7a8a;
+            --glow: 0 0 18px #00d4ff55;
+            --glow2: 0 0 18px #00ff8855;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Exo 2', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Scanline overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.08) 2px,
+                rgba(0,0,0,0.08) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* ─── BOOT SCREEN ─── */
+        #bootScreen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9998;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease;
+            overflow: hidden;
+        }
+        #bootScreen.hidden { opacity: 0; pointer-events: none; }
+
+        #matrixCanvas {
+            position: absolute;
+            inset: 0;
+            opacity: 0.18;
+        }
+
+        /* scan line sweeping down */
+        #bootScreen::before {
+            content: '';
+            position: absolute;
+            left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            box-shadow: 0 0 18px var(--accent), 0 0 40px var(--accent);
+            animation: scanSweep 3s linear infinite;
+            z-index: 2;
+        }
+        @keyframes scanSweep {
+            0%   { top: -2px; opacity: 0; }
+            5%   { opacity: 1; }
+            95%  { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .boot-center {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            width: min(700px, 90vw);
+        }
+
+        /* HEX ID badge above name */
+        .boot-hex {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent2);
+            letter-spacing: 0.3em;
+            margin-bottom: 1.2rem;
+            opacity: 0;
+            animation: fadeSlideUp 0.5s 0.3s forwards;
+        }
+
+        /* GLITCH NAME */
+        .boot-name {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 7vw, 4.5rem);
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 0.1em;
+            position: relative;
+            display: inline-block;
+            text-shadow: 0 0 40px #00d4ffaa, 0 0 80px #00d4ff44;
+            opacity: 0;
+            animation: fadeSlideUp 0.6s 0.8s forwards;
+        }
+        .boot-name::before,
+        .boot-name::after {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            letter-spacing: inherit;
+        }
+        .boot-name::before {
+            color: var(--accent);
+            animation: glitchTop 2.5s infinite linear;
+            clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+        }
+        .boot-name::after {
+            color: var(--accent3);
+            animation: glitchBot 2.5s infinite linear;
+            clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+        }
+        @keyframes glitchTop {
+            0%,80%,100% { transform: translate(0); opacity: 0; }
+            81%          { transform: translate(-3px, -2px); opacity: 0.8; }
+            84%          { transform: translate(3px,  1px); opacity: 0.8; }
+            87%          { transform: translate(-2px, 0);   opacity: 0.8; }
+            90%          { transform: translate(0);         opacity: 0; }
+        }
+        @keyframes glitchBot {
+            0%,85%,100% { transform: translate(0); opacity: 0; }
+            86%          { transform: translate(4px, 2px);  opacity: 0.7; }
+            89%          { transform: translate(-3px, 1px); opacity: 0.7; }
+            92%          { transform: translate(0);         opacity: 0; }
+        }
+
+        /* ROLE LINE */
+        .boot-role {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: clamp(0.72rem, 2vw, 1rem);
+            color: var(--accent2);
+            letter-spacing: 0.25em;
+            margin-top: 0.8rem;
+            text-shadow: 0 0 14px #00ff8888;
+            opacity: 0;
+            animation: fadeSlideUp 0.5s 1.4s forwards;
+        }
+
+        /* DIVIDER */
+        .boot-divider {
+            width: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+            margin: 1.8rem auto;
+            animation: expandLine 0.8s 1.8s forwards;
+            box-shadow: 0 0 10px var(--accent);
+        }
+        @keyframes expandLine { to { width: 100%; } }
+
+        /* LOG LINES */
+        .boot-line {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            margin: 0.25rem 0;
+            text-align: left;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: opacity 0.25s, transform 0.25s;
+        }
+        .boot-line.visible { opacity: 1; transform: none; }
+        .boot-prompt { color: var(--accent2); }
+        .boot-ok    { color: var(--accent2); margin-left: 0.5rem; }
+        .boot-warn  { color: #ffb700; margin-left: 0.5rem; }
+        .boot-ready { color: var(--accent); margin-left: 0.5rem; font-weight: bold; }
+
+        /* PROGRESS */
+        .boot-bar-wrap {
+            margin-top: 1.4rem;
+            height: 3px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .boot-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--accent2), var(--accent));
+            transition: width 0.4s ease;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        /* PCT label */
+        .boot-pct {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--accent);
+            text-align: right;
+            margin-top: 0.3rem;
+        }
+
+        .boot-footer {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 1.2rem;
+            letter-spacing: 0.1em;
+        }
+        .blink { animation: blink 1s infinite; }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        /* ─── NAV ─── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: rgba(3,11,15,0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.8rem 2rem;
+        }
+        .nav-inner { max-width: 1200px; margin: auto; display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-family: 'Orbitron', monospace; font-size: 1rem; color: var(--accent); text-shadow: var(--glow); letter-spacing: 0.15em; }
+        .logo span { color: var(--accent2); }
+        .nav-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        .nav-links a { font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--muted); text-decoration: none; letter-spacing: 0.08em; transition: color 0.2s, text-shadow 0.2s; }
+        .nav-links a:hover { color: var(--accent); text-shadow: var(--glow); }
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+        .hamburger span { display: block; width: 24px; height: 2px; background: var(--accent); }
+
+        /* ─── HERO ─── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 5rem 2rem 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 70% 50%, rgba(0,212,255,0.07) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0,255,136,0.05) 0%, transparent 70%);
+        }
+        .grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.15;
+        }
+        .hero-inner { max-width: 1200px; margin: auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; position: relative; }
+        .hero-tag { font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--accent2); letter-spacing: 0.15em; margin-bottom: 1rem; }
+        .hero-tag::before { content: '// '; }
+        h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fff 30%, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        .hero-sub { font-size: 1rem; color: var(--muted); margin-bottom: 2rem; font-family: 'Share Tech Mono', monospace; }
+        .hero-roles { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
+        .role-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            padding: 0.3rem 0.8rem;
+            border: 1px solid;
+            letter-spacing: 0.1em;
+        }
+        .role-tag.r1 { border-color: var(--accent3); color: var(--accent3); }
+        .role-tag.r2 { border-color: var(--accent); color: var(--accent); }
+        .role-tag.r3 { border-color: var(--accent2); color: var(--accent2); }
+        .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .btn {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.82rem;
+            padding: 0.7rem 1.5rem;
+            text-decoration: none;
+            letter-spacing: 0.1em;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary { background: var(--accent); color: var(--bg); }
+        .btn-primary:hover { background: #fff; box-shadow: var(--glow); }
+        .btn-secondary { border: 1px solid var(--accent); color: var(--accent); background: transparent; }
+        .btn-secondary:hover { background: var(--accent); color: var(--bg); }
+
+        /* Terminal window */
+        .terminal {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            box-shadow: var(--glow), inset 0 0 40px rgba(0,0,0,0.5);
+        }
+        .terminal-header {
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            padding: 0.5rem 0.8rem;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-r { background: #ff5f57; }
+        .dot-y { background: #ffbd2e; }
+        .dot-g { background: #28c840; }
+        .terminal-title { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-left: auto; }
+        .terminal-body { padding: 1.2rem; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; line-height: 1.8; }
+        .terminal-body .prompt { color: var(--accent2); }
+        .terminal-body .cmd { color: var(--accent); }
+        .terminal-body .out { color: var(--text); }
+        .terminal-body .link { color: var(--accent); text-decoration: none; }
+        .terminal-body .link:hover { text-decoration: underline; }
+        .cursor { animation: blink 1s infinite; color: var(--accent); }
+
+        /* ─── SECTIONS ─── */
+        section { padding: 5rem 2rem; }
+        .section-inner { max-width: 1200px; margin: auto; }
+        h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            color: var(--accent);
+            text-shadow: var(--glow);
+            margin-bottom: 0.4rem;
+        }
+        .section-line { width: 60px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); margin-bottom: 3rem; }
+
+        /* ─── ABOUT ─── */
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+        .about-intro { font-size: 1.1rem; color: var(--text); margin-bottom: 1rem; line-height: 1.7; }
+        .highlight { color: var(--accent); font-weight: 600; }
+        .about-body { color: var(--muted); line-height: 1.8; margin-bottom: 1.5rem; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+        .stat { background: var(--panel); border: 1px solid var(--border); padding: 1rem; text-align: center; }
+        .stat-num { font-family: 'Orbitron', monospace; font-size: 1.8rem; color: var(--accent); text-shadow: var(--glow); }
+        .stat-lbl { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; }
+
+        /* ─── SKILLS ─── */
+        #skills { background: var(--bg2); }
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .skill-cat { background: var(--panel); border: 1px solid var(--border); padding: 1.5rem; }
+        .skill-cat h3 { font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--accent2); margin-bottom: 1.2rem; letter-spacing: 0.1em; }
+        .skill-cat h3::before { content: '$ '; color: var(--muted); }
+        .skill-row { margin-bottom: 1rem; }
+        .skill-label { display: flex; justify-content: space-between; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--text); margin-bottom: 0.3rem; }
+        .skill-label span:last-child { color: var(--accent); }
+        .skill-track { height: 4px; background: var(--bg); border: 1px solid var(--border); }
+        .skill-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); width: 0; transition: width 1.2s ease; }
+
+        /* ─── EXPERIENCE / EDUCATION (timeline) ─── */
+        .timeline { position: relative; padding-left: 2rem; }
+        .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: var(--border); }
+        .tl-item { position: relative; margin-bottom: 2.5rem; }
+        .tl-dot {
+            position: absolute;
+            left: -2.4rem;
+            top: 0.3rem;
+            width: 10px; height: 10px;
+            border: 2px solid var(--accent);
+            background: var(--bg);
+            box-shadow: var(--glow);
+        }
+        .tl-content { background: var(--panel); border: 1px solid var(--border); padding: 1.2rem 1.5rem; }
+        .tl-title { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: var(--text); }
+        .tl-date { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--accent); margin: 0.3rem 0 0.7rem; }
+        .tl-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+
+        /* ─── CERTS ─── */
+        #certifications { background: var(--bg2); }
+        .certs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+        .cert-card { background: var(--panel); border: 1px solid var(--border); padding: 1.5rem; position: relative; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
+        .cert-card:hover { transform: translateY(-4px); box-shadow: var(--glow); }
+        .cert-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+        .cert-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
+        .cert-issuer { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 0.3rem; }
+        .cert-name { font-family: 'Orbitron', monospace; font-size: 0.85rem; color: var(--text); margin-bottom: 0.6rem; }
+        .cert-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
+        .cert-footer { display: flex; justify-content: space-between; align-items: center; }
+        .cert-year { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+        .cert-verify { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--accent); text-decoration: none; }
+        .cert-verify:hover { text-decoration: underline; }
+
+        /* ─── PROJECTS ─── */
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .proj-card { background: var(--panel); border: 1px solid var(--border); padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s; }
+        .proj-card:hover { transform: translateY(-4px); box-shadow: var(--glow); }
+        .proj-icon { font-size: 1.5rem; margin-bottom: 0.8rem; }
+        .proj-title { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: var(--accent); margin-bottom: 0.6rem; }
+        .proj-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; margin-bottom: 1rem; }
+        .proj-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+        .proj-tag { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 0.2rem 0.5rem; border: 1px solid var(--border); color: var(--muted); }
+        .proj-link { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent2); text-decoration: none; }
+        .proj-link:hover { text-decoration: underline; }
+
+        /* ─── BLOG ─── */
+        #blog { background: var(--bg2); }
+        .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .blog-card { background: var(--panel); border: 1px solid var(--border); padding: 1.5rem; }
+        .blog-date { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-bottom: 0.6rem; }
+        .blog-title { font-family: 'Orbitron', monospace; font-size: 0.85rem; color: var(--text); margin-bottom: 0.8rem; line-height: 1.4; }
+        .blog-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem; }
+        .blog-tag { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 0.2rem 0.5rem; background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2); color: var(--accent); }
+        .blog-excerpt { font-size: 0.82rem; color: var(--muted); line-height: 1.7; margin-bottom: 1rem; }
+
+        /* ─── CONTACT ─── */
+        .contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 3rem; }
+        .contact-items { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+        .contact-item { background: var(--panel); border: 1px solid var(--border); padding: 1rem; text-align: center; transition: border-color 0.2s; }
+        .contact-item:hover { border-color: var(--accent); }
+        .contact-icon { font-size: 1.4rem; margin-bottom: 0.4rem; }
+        .contact-item h3 { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.3rem; }
+        .contact-item a { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--accent); text-decoration: none; word-break: break-all; }
+        .contact-item a:hover { text-decoration: underline; }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--accent2); margin-bottom: 0.4rem; }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.82rem;
+            padding: 0.7rem 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); box-shadow: var(--glow); }
+        .form-group textarea { height: 120px; resize: vertical; }
+
+        /* ─── FOOTER ─── */
+        footer {
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            text-align: center;
+            padding: 2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+        footer .sig { color: var(--accent); text-shadow: var(--glow); }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
+        .fade-in.visible { opacity: 1; transform: none; }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 768px) {
+            .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+            .about-grid { grid-template-columns: 1fr; }
+            .contact-grid { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: 1fr 1fr; }
+            .contact-items { grid-template-columns: 1fr 1fr; }
+            .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg); flex-direction: column; padding: 1rem 2rem; border-bottom: 1px solid var(--border); }
+            .nav-links.open { display: flex; }
+            .hamburger { display: flex; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Terminal Boot Screen - signed: serozr -->
-    <div id="bootScreen" class="boot-screen">
-        <div class="boot-content">
-            <div class="boot-header">
-                <pre class="ascii-art">
- ____  _____ _   _ _____ _     ___  ____  _____ ____  
-|  _ \| ____| | | | ____| |   / _ \|  _ \| ____|  _ \ 
-| | | |  _| | | | |  _| | |  | | | | |_) |  _| | |_) |
-| |_| | |___| |_| | |___| |__| |_| |  __/| |___|  _ < 
-|____/|_____|\___/|_____|_____\___/|_|   |_____|_| \_\
-                </pre>
-            </div>
-            <div class="boot-terminal">
-                <p><span class="boot-prompt">[SYSTEM]</span> <span class="boot-text">Initializing system...</span></p>
-                <p><span class="boot-prompt">[BOOT]</span> <span class="boot-text">Loading core modules</span> <span class="boot-dots"></span></p>
-                <p><span class="boot-prompt">[INIT]</span> <span class="boot-text">Mounting file systems</span> <span class="boot-status boot-ok">[OK]</span></p>
-                <p><span class="boot-prompt">[LOAD]</span> <span class="boot-text">Starting network services</span> <span class="boot-status boot-ok">[OK]</span></p>
-                <p><span class="boot-prompt">[EXEC]</span> <span class="boot-text">Loading portfolio.sh</span> <span class="boot-dots"></span></p>
-                <p><span class="boot-prompt">[INIT]</span> <span class="boot-text">Initializing user interface</span> <span class="boot-status boot-ok">[OK]</span></p>
-                <p><span class="boot-prompt">[DONE]</span> <span class="boot-text">System ready</span> <span class="boot-status boot-ready">[READY]</span></p>
-            </div>
-            <div class="boot-progress">
-                <div class="boot-progress-bar"></div>
-            </div>
-            <p class="boot-footer">Press any key to continue... <span class="boot-sign">— serozr</span></p>
+
+<!-- ─── BOOT SCREEN ─── -->
+<div id="bootScreen">
+    <canvas id="matrixCanvas"></canvas>
+    <div class="boot-center">
+        <div class="boot-hex" id="bootHex">IDENTITY VERIFIED · UID-0xMM2025 · DHAKA NODE</div>
+        <div class="boot-name" id="bootName" data-text="MONJUR MORSHED">MONJUR MORSHED</div>
+        <div class="boot-role" id="bootRole">ETHICAL HACKER · SOC ANALYST · FLUTTER DEV</div>
+        <div class="boot-divider"></div>
+        <div id="bootLines"></div>
+        <div class="boot-bar-wrap"><div class="boot-bar" id="bootBar"></div></div>
+        <div class="boot-pct" id="bootPct">0%</div>
+        <p class="boot-footer">[ CLICK OR PRESS ANY KEY TO ENTER ] <span class="blink">▮</span></p>
+    </div>
+</div>
+
+<!-- ─── NAV ─── -->
+<nav>
+    <div class="nav-inner">
+        <div class="logo">&gt;_ <span>MM</span>.sh</div>
+        <div class="hamburger" id="hamburger" onclick="toggleNav()">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <a href="#about">About</a>
+            <a href="#skills">Skills</a>
+            <a href="#experience">Experience</a>
+            <a href="#education">Education</a>
+            <a href="#certifications">Certs</a>
+            <a href="#projects">Projects</a>
+            <a href="#blog">Blog</a>
+            <a href="#contact">Contact</a>
         </div>
     </div>
+</nav>
 
-    <nav>
-        <div class="nav-content">
-            <div class="logo">&gt;_developer.sh <span class="logo-sign">· serozr</span></div>
-            <div class="hamburger" onclick="toggleMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
+<!-- ─── HERO ─── -->
+<section class="hero">
+    <div class="grid-bg"></div>
+    <div class="hero-inner">
+        <div>
+            <div class="hero-tag">Ethical Hacker · SOC Analyst · Flutter Dev</div>
+            <h1>MONJUR<br>MORSHED</h1>
+            <p class="hero-sub">// Based in Dhaka, Bangladesh 🇧🇩</p>
+            <div class="hero-roles">
+                <span class="role-tag r1">[ ETHICAL HACKER ]</span>
+                <span class="role-tag r2">[ SOC ANALYST ]</span>
+                <span class="role-tag r3">[ FLUTTER DEV ]</span>
             </div>
-            <div class="nav-links" id="navLinks">
-                <a href="#about" onclick="closeMenu()">About</a>
-                <a href="#skills" onclick="closeMenu()">Skills</a>
-                <a href="#experience" onclick="closeMenu()">Experience</a>
-                <a href="#education" onclick="closeMenu()">Education</a>
-                <a href="#certifications" onclick="closeMenu()">Certifications</a>
-                <a href="#projects" onclick="closeMenu()">Projects</a>
-                <a href="#blog" onclick="closeMenu()">Blog</a>
-                <a href="#contact" onclick="closeMenu()">Contact</a>
-            </div>
-        </div>
-    </nav>
-
-    <section class="hero">
-        <div class="hero-content fade-in">
-            <div class="tag">// web developer & Designer</div>
-            <h1>SEROZR <small class="inline-sign">(serozr)</small></h1>
-            <p class="subtitle">Building digital experiences — crafted by serozr</p>
-            
-            <div class="terminal-window">
-                <div class="terminal-header">
-                    <div class="terminal-dot dot-red"></div>
-                    <div class="terminal-dot dot-yellow"></div>
-                    <div class="terminal-dot dot-green"></div>
-                </div>
-                <div class="terminal-text">
-                    <p><span class="prompt">$</span> <span class="command">./get_profile.sh</span></p>
-                    <p class="output">Developer with expertise in:</p>
-                    <p class="output"><span class="prompt">&gt;</span> Web Development</p>
-                    <p class="output"><span class="prompt">&gt;</span> UI/UX Design</p>
-                    <p class="output"><span class="prompt">&gt;</span> Creative Projects</p>
-                    <br>
-                    <p><span class="prompt">$</span> <span class="command">cat contact.txt</span></p>
-                    <p class="output">GitHub: <a href="https://github.com/serozr" target="_blank" class="link">github.com/serozr</a> <span class="muted">· by serozr</span></p>
-                    <br>
-                    <p><span class="prompt">$</span> <span class="output">_</span><span style="animation: blink 1s infinite;">|</span></p>
-                </div>
-            </div>
-
-            <div class="cta-buttons">
+            <div class="cta-row">
                 <a href="#projects" class="btn btn-primary">View Projects</a>
                 <a href="#contact" class="btn btn-secondary">Get In Touch</a>
-                <!-- Quick sign -->
-                <span class="cta-sign">signed: serozr</span>
             </div>
         </div>
-    </section>
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="dot dot-r"></div>
+                <div class="dot dot-y"></div>
+                <div class="dot dot-g"></div>
+                <span class="terminal-title">profile.sh</span>
+            </div>
+            <div class="terminal-body">
+                <p><span class="prompt">$</span> <span class="cmd">./get_profile.sh --user monjur</span></p>
+                <p class="out">&gt; Name: Monjur Morshed</p>
+                <p class="out">&gt; Location: Dhaka, Bangladesh</p>
+                <p class="out">&gt; Specialties:</p>
+                <p class="out">&nbsp;&nbsp;— Ethical Hacking &amp; Pen Testing</p>
+                <p class="out">&nbsp;&nbsp;— SOC Analysis &amp; Threat Detection</p>
+                <p class="out">&nbsp;&nbsp;— Flutter Mobile Development</p>
+                <br>
+                <p><span class="prompt">$</span> <span class="cmd">cat links.txt</span></p>
+                <p class="out">GitHub: <a href="https://github.com/monjurmorshedprince" target="_blank" class="link">github.com/monjurmorshedprince</a></p>
+                <p class="out">Email: <a href="mailto:dev@monjurmorshed.com" class="link">dev@monjurmorshed.com</a></p>
+                <p class="out">Fiverr: <span style="color:var(--accent2)">Level 2 Seller ⭐⭐</span></p>
+                <br>
+                <p><span class="prompt">$</span> <span class="cursor">█</span></p>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <section id="about">
+<!-- ─── ABOUT ─── -->
+<section id="about">
+    <div class="section-inner">
         <h2>About Me</h2>
-        <div class="about-container">
-            <div class="about-content fade-in">
-                <div class="about-text">
-                    <p class="about-intro">
-                        Hi! I'm <span class="highlight">serozr</span>, a passionate web developer and designer 
-                        who loves crafting immersive digital experiences. <span class="about-sign">— serozr</span>
-                    </p>
-                    <p>
-                        With a strong foundation in both frontend and backend development, I specialize in 
-                        creating modern, responsive websites that combine cutting-edge technology with 
-                        creative design. My work is driven by a passion for clean code, innovative UI/UX, 
-                        and pushing the boundaries of what's possible on the web.
-                    </p>
-                    <div class="about-stats">
-                        <div class="stat-item">
-                            <div class="stat-number">5+</div>
-                            <div class="stat-label">Years of Experience</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">50+</div>
-                            <div class="stat-label">Projects Completed</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">∞</div>
-                            <div class="stat-label">Cups of Coffee</div>
-                        </div>
+        <div class="section-line"></div>
+        <div class="about-grid">
+            <div class="fade-in">
+                <p class="about-intro">
+                    Hi! I'm <span class="highlight">Monjur Morshed</span> — a cybersecurity professional,
+                    SOC analyst, and Flutter developer based in Dhaka, Bangladesh.
+                </p>
+                <p class="about-body">
+                    I'm passionate about both offensive and defensive security — finding vulnerabilities before 
+                    attackers do, and building resilient monitoring pipelines that detect threats in real time. 
+                    On the development side, I craft beautiful, performant mobile apps with Flutter.
+                </p>
+                <p class="about-body">
+                    With 2+ years of Flutter development experience and an active Level 2 seller presence on Fiverr,
+                    I bridge the gap between security-first thinking and clean, user-friendly software.
+                </p>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-num">2+</div>
+                        <div class="stat-lbl">Years Flutter Dev</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-num">L2</div>
+                        <div class="stat-lbl">Fiverr Seller</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-num">∞</div>
+                        <div class="stat-lbl">Cups of Cha ☕</div>
                     </div>
                 </div>
-                <div class="about-image">
-                    <div class="code-window">
-                        <div class="code-header">
-                            <div class="code-dot dot-red"></div>
-                            <div class="code-dot dot-yellow"></div>
-                            <div class="code-dot dot-green"></div>
-                            <span class="code-title">about.js</span>
-                        </div>
-                        <div class="code-content">
-<pre><code><span class="code-keyword">const</span> <span class="code-variable">developer</span> = {
-                        <span class="code-property">name</span>: <span class="code-string">"serozr"</span>,
-  <span class="code-property">role</span>: <span class="code-string">"Full Stack Developer"</span>,
-  <span class="code-property">location</span>: <span class="code-string">"Your Location"</span>,
-  <span class="code-property">interests</span>: [
-    <span class="code-string">"Web Development"</span>,
-    <span class="code-string">"UI/UX Design"</span>,
-    <span class="code-string">"Cybersecurity"</span>,
-    <span class="code-string">"Creative Coding"</span>
+            </div>
+            <div class="fade-in">
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <div class="dot dot-r"></div>
+                        <div class="dot dot-y"></div>
+                        <div class="dot dot-g"></div>
+                        <span class="terminal-title">about.json</span>
+                    </div>
+                    <div class="terminal-body" style="font-size:0.78rem;">
+<pre style="color:var(--text);line-height:1.7;"><span style="color:var(--muted)">{</span>
+  <span style="color:var(--accent2)">"name"</span>: <span style="color:var(--accent)">"Monjur Morshed"</span>,
+  <span style="color:var(--accent2)">"location"</span>: <span style="color:var(--accent)">"Dhaka, Bangladesh"</span>,
+  <span style="color:var(--accent2)">"roles"</span>: [
+    <span style="color:var(--accent)">"Ethical Hacker"</span>,
+    <span style="color:var(--accent)">"SOC Analyst"</span>,
+    <span style="color:var(--accent)">"Flutter Developer"</span>
   ],
-  <span class="code-property">currentlyLearning</span>: [
-    <span class="code-string">"Advanced React"</span>,
-    <span class="code-string">"Penetration Testing"</span>
+  <span style="color:var(--accent2)">"certifications"</span>: [
+    <span style="color:var(--accent)">"Google (Cybersecurity)"</span>,
+    <span style="color:var(--accent)">"IBM (Security)"</span>
   ],
-    <span class="code-property">funFact</span>: <span class="code-string">"I add small interactive touches to delight users"</span>
-};</code></pre>
-                        </div>
+  <span style="color:var(--accent2)">"fiverr"</span>: <span style="color:var(--accent2)">"Level 2 Seller"</span>,
+  <span style="color:var(--accent2)">"status"</span>: <span style="color:#00ff88">"open_to_work"</span>
+<span style="color:var(--muted)">}</span></pre>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section id="skills">
+<!-- ─── SKILLS ─── -->
+<section id="skills">
+    <div class="section-inner">
         <h2>Skills</h2>
+        <div class="section-line"></div>
         <div class="skills-grid">
-            <div class="skill-category fade-in">
-                <h3>Frontend Development</h3>
-                <div class="skill-item">
-                    <div class="skill-name">
-                        <span>HTML/CSS</span>
-                        <span>90%</span>
-                    </div>
-                    <div class="skill-bar">
-                        <div class="skill-progress" style="width: 0%" data-width="90%"></div>
-                    </div>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-name">
-                        <span>JavaScript</span>
-                        <span>85%</span>
-                    </div>
-                    <div class="skill-bar">
-                        <div class="skill-progress" style="width: 0%" data-width="85%"></div>
-                    </div>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-name">
-                        <span>React</span>
-                        <span>80%</span>
-                    </div>
-                    <div class="skill-bar">
-                        <div class="skill-progress" style="width: 0%" data-width="80%"></div>
-                    </div>
-                </div>
+            <div class="skill-cat fade-in">
+                <h3>Cybersecurity</h3>
+                <div class="skill-row"><div class="skill-label"><span>Penetration Testing</span><span>85%</span></div><div class="skill-track"><div class="skill-fill" data-w="85"></div></div></div>
+                <div class="skill-row"><div class="skill-label"><span>SOC Analysis</span><span>80%</span></div><div class="skill-track"><div class="skill-fill" data-w="80"></div></div></div>
+                <div class="skill-row"><div class="skill-label"><span>Network Security</span><span>78%</span></div><div class="skill-track"><div class="skill-fill" data-w="78"></div></div></div>
+                <div class="skill-row"><div class="skill-label"><span>Threat Intelligence</span><span>75%</span></div><div class="skill-track"><div class="skill-fill" data-w="75"></div></div></div>
             </div>
-
-            <div class="skill-category fade-in" style="animation-delay: 0.1s;">
-                <h3>Backend Development</h3>
-                <div class="skill-item">
-                    <div class="skill-name">
-                        <span>Node.js</span>
-                        <span>75%</span>
-                    </div>
-                    <div class="skill-bar">
-                        <div class="skill-progress" style="width: 0%" data-width="75%"></div>
-                    </div>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-name">
-                        <span>Python</span>
-                        <span>70%</span>
-                    </div>
-                    <div class="skill-bar">
-                        <div class="skill-progress" style="width: 0%" data-width="70%"></div>
-                    </div>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-name">
-                        <span>Database</span>
-                        <span>75%</span>
-                    </div>
-                    <div class="skill-bar">
-                        <div class="skill-progress" style="width: 0%" data-width="75%"></div>
-                    </div>
-                </div>
+            <div class="skill-cat fade-in" style="animation-delay:0.1s">
+                <h3>Flutter Development</h3>
+                <div class="skill-row"><div class="skill-label"><span>Flutter / Dart</span><span>88%</span></div><div class="skill-track"><div class="skill-fill" data-w="88"></div></div></div>
+                <div class="skill-row"><div class="skill-label"><span>State Management</span><span>82%</span></div><div class="skill-track"><div class="skill-fill" data-w="82"></div></div></div>
+                <div class="skill-row"><div class="skill-label"><span>Firebase</span><span>78%</span></div><div class="skill-track"><div class="skill-fill" data-w="78"></div></div></div>
+                <div class="skill-row"><div class="skill-label"><span>REST APIs</span><span>80%</span></div><div class="skill-track"><div class="skill-fill" data-w="80"></div></div></div>
             </div>
-
-            <div class="skill-category fade-in" style="animation-delay: 0.2s;">
-                <h3>Design & Tools</h3>
-                <div class="skill-item">
-                    <div class="skill-name">
-                        <span>UI/UX Design</span>
-                        <span>85%</span>
-                    </div>
-                    <div class="skill-bar">
-                        <div class="skill-progress" style="width: 0%" data-width="85%"></div>
-                    </div>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-name">
-                        <span>Git/GitHub</span>
-                        <span>90%</span>
-                    </div>
-                    <div class="skill-bar">
-                        <div class="skill-progress" style="width: 0%" data-width="90%"></div>
-                    </div>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-name">
-                        <span>Responsive Design</span>
-                        <span>95%</span>
-                    </div>
-                    <div class="skill-bar">
-                        <div class="skill-progress" style="width: 0%" data-width="95%"></div>
-                    </div>
-                </div>
+            <div class="skill-cat fade-in" style="animation-delay:0.2s">
+                <h3>Tools & Other</h3>
+                <div class="skill-row"><div class="skill-label"><span>Kali Linux / Tools</span><span>85%</span></div><div class="skill-track"><div class="skill-fill" data-w="85"></div></div></div>
+                <div class="skill-row"><div class="skill-label"><span>SIEM (Splunk/ELK)</span><span>75%</span></div><div class="skill-track"><div class="skill-fill" data-w="75"></div></div></div>
+                <div class="skill-row"><div class="skill-label"><span>Git / GitHub</span><span>88%</span></div><div class="skill-track"><div class="skill-fill" data-w="88"></div></div></div>
+                <div class="skill-row"><div class="skill-label"><span>Python (Scripting)</span><span>72%</span></div><div class="skill-track"><div class="skill-fill" data-w="72"></div></div></div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section id="experience">
+<!-- ─── EXPERIENCE ─── -->
+<section id="experience">
+    <div class="section-inner">
         <h2>Experience</h2>
+        <div class="section-line"></div>
         <div class="timeline">
-            <div class="timeline-item fade-in">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>Full Stack Developer</h3>
-                    <div class="timeline-date">2024 - Present</div>
-                    <p class="timeline-description">
-                        Developing modern web applications with cutting-edge technologies. 
-                        Building responsive and interactive user interfaces with focus on performance and user experience.
-                    </p>
+            <div class="tl-item fade-in">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-title">Ethical Hacker & SOC Analyst</div>
+                    <div class="tl-date">2023 — Present</div>
+                    <p class="tl-desc">Conducting penetration tests, vulnerability assessments, and security audits for clients. Monitoring security events, triaging alerts, and responding to incidents using SIEM tools.</p>
                 </div>
             </div>
-
-            <div class="timeline-item fade-in" style="animation-delay: 0.1s;">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>Frontend Developer</h3>
-                    <div class="timeline-date">2023 - 2024</div>
-                    <p class="timeline-description">
-                            Specialized in creating immersive web experiences with advanced CSS animations and JavaScript interactions.
-                            Developed multiple creative projects showcasing interactive animations and experimental UI.
-                        </p>
+            <div class="tl-item fade-in" style="animation-delay:0.1s">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-title">Flutter Developer — Fiverr Level 2 Seller</div>
+                    <div class="tl-date">2022 — Present</div>
+                    <p class="tl-desc">Building and delivering Flutter mobile applications for clients worldwide via Fiverr. Earned Level 2 Seller status through consistent 5-star reviews and on-time delivery of 50+ projects.</p>
                 </div>
             </div>
-
-            <div class="timeline-item fade-in" style="animation-delay: 0.2s;">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>Web Designer</h3>
-                    <div class="timeline-date">2022 - 2023</div>
-                    <p class="timeline-description">
-                        Designed and prototyped user interfaces for various web applications.
-                        Focused on modern design trends and user-centered design principles.
-                    </p>
+            <div class="tl-item fade-in" style="animation-delay:0.2s">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-title">Freelance Mobile Developer</div>
+                    <div class="tl-date">2022 — 2023</div>
+                    <p class="tl-desc">Developed cross-platform mobile applications using Flutter and Dart. Integrated Firebase backend services, REST APIs, and custom UI components for clients across various industries.</p>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section id="education">
+<!-- ─── EDUCATION ─── -->
+<section id="education" style="background:var(--bg2)">
+    <div class="section-inner">
         <h2>Education</h2>
+        <div class="section-line"></div>
         <div class="timeline">
-            <div class="timeline-item fade-in">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>Cyber Security</h3>
-                    <div class="timeline-date">2024 - Present</div>
-                    <p class="timeline-description">
-                        Studied cybersecurity principles, network security, ethical hacking, and digital forensics.
-                        Specialized in secure web development and protecting applications against cyber threats.
-                    </p>
+            <div class="tl-item fade-in">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-title">Cybersecurity Studies</div>
+                    <div class="tl-date">2023 — Present</div>
+                    <p class="tl-desc">Studying ethical hacking, network security, digital forensics, and SOC operations. Focus on real-world attack vectors, defensive strategies, and security incident response.</p>
                 </div>
             </div>
-
-            <div class="timeline-item fade-in" style="animation-delay: 0.1s;">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>Self-Learning & Online Courses</h3>
-                    <div class="timeline-date">2019 - Present</div>
-                    <p class="timeline-description">
-                        Continuously learning new technologies through online platforms.
-                        Completed courses in React, Node.js, UI/UX Design, and advanced JavaScript.
-                    </p>
+            <div class="tl-item fade-in" style="animation-delay:0.1s">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-title">Self-Learning & Online Platforms</div>
+                    <div class="tl-date">2020 — Present</div>
+                    <p class="tl-desc">Continuous learning through Coursera, Google Career Certificates, IBM SkillsBuild, TryHackMe, and Hack The Box. Staying current with evolving threat landscapes and development practices.</p>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section id="certifications">
+<!-- ─── CERTIFICATIONS ─── -->
+<section id="certifications">
+    <div class="section-inner">
         <h2>Certifications & Awards</h2>
-        <div class="certifications-grid">
+        <div class="section-line"></div>
+        <div class="certs-grid">
             <div class="cert-card fade-in">
-                <div class="cert-icon">🏆</div>
-                <div class="cert-badge">
-                    <div class="cert-badge-inner">
-                        <div class="cert-title">Web Development</div>
-                        <div class="cert-issuer">FreeCodeCamp</div>
-                    </div>
-                </div>
-                <h3>Responsive Web Design</h3>
-                <p class="cert-description">
-                    Completed comprehensive curriculum covering HTML5, CSS3, Flexbox, Grid, and responsive design principles.
-                </p>
-                <div class="cert-footer">
-                    <span class="cert-date">2024</span>
-                    <a href="#" class="cert-link">Verify &rarr;</a>
-                </div>
+                <div class="cert-icon">🔵</div>
+                <div class="cert-issuer">Google</div>
+                <div class="cert-name">Google Cybersecurity Certificate</div>
+                <p class="cert-desc">Completed Google's professional cybersecurity curriculum covering network security, Linux, Python for security, SIEM tools, and incident response.</p>
+                <div class="cert-footer"><span class="cert-year">2024</span><a href="#" class="cert-verify">Verify →</a></div>
             </div>
-
-            <div class="cert-card fade-in" style="animation-delay: 0.1s;">
+            <div class="cert-card fade-in" style="animation-delay:0.1s">
+                <div class="cert-icon">🔴</div>
+                <div class="cert-issuer">IBM</div>
+                <div class="cert-name">IBM Cybersecurity Analyst</div>
+                <p class="cert-desc">IBM professional certification covering threat intelligence, data loss prevention, endpoint protection, SIEM, and cybersecurity case studies.</p>
+                <div class="cert-footer"><span class="cert-year">2024</span><a href="#" class="cert-verify">Verify →</a></div>
+            </div>
+            <div class="cert-card fade-in" style="animation-delay:0.2s">
+                <div class="cert-icon">🟢</div>
+                <div class="cert-issuer">Fiverr</div>
+                <div class="cert-name">Level 2 Seller Badge</div>
+                <p class="cert-desc">Achieved Fiverr Level 2 Seller status through consistent high ratings, on-time delivery, and successful completion of 50+ Flutter development projects.</p>
+                <div class="cert-footer"><span class="cert-year">2023</span><span class="cert-verify">⭐⭐ L2</span></div>
+            </div>
+            <div class="cert-card fade-in" style="animation-delay:0.3s">
                 <div class="cert-icon">🔐</div>
-                <div class="cert-badge">
-                    <div class="cert-badge-inner">
-                        <div class="cert-title">Cybersecurity</div>
-                        <div class="cert-issuer">Coursera</div>
-                    </div>
-                </div>
-                <h3>Ethical Hacking Fundamentals</h3>
-                <p class="cert-description">
-                    Learned penetration testing, vulnerability assessment, and security best practices for web applications.
-                </p>
-                <div class="cert-footer">
-                    <span class="cert-date">2024</span>
-                    <a href="#" class="cert-link">Verify &rarr;</a>
-                </div>
-            </div>
-
-            <div class="cert-card fade-in" style="animation-delay: 0.2s;">
-                <div class="cert-icon">⚛️</div>
-                <div class="cert-badge">
-                    <div class="cert-badge-inner">
-                        <div class="cert-title">JavaScript</div>
-                        <div class="cert-issuer">Udemy</div>
-                    </div>
-                </div>
-                <h3>Advanced React & Redux</h3>
-                <p class="cert-description">
-                    Mastered modern React patterns, state management, hooks, and building scalable applications.
-                </p>
-                <div class="cert-footer">
-                    <span class="cert-date">2023</span>
-                    <a href="#" class="cert-link">Verify &rarr;</a>
-                </div>
-            </div>
-
-            <div class="cert-card fade-in" style="animation-delay: 0.3s;">
-                <div class="cert-icon">🎨</div>
-                <div class="cert-badge">
-                    <div class="cert-badge-inner">
-                        <div class="cert-title">Design</div>
-                        <div class="cert-issuer">Google</div>
-                    </div>
-                </div>
-                <h3>UX Design Professional</h3>
-                <p class="cert-description">
-                    Comprehensive training in user research, wireframing, prototyping, and usability testing methodologies.
-                </p>
-                <div class="cert-footer">
-                    <span class="cert-date">2023</span>
-                    <a href="#" class="cert-link">Verify &rarr;</a>
-                </div>
-            </div>
-
-            <div class="cert-card fade-in" style="animation-delay: 0.4s;">
-                <div class="cert-icon">🌐</div>
-                <div class="cert-badge">
-                    <div class="cert-badge-inner">
-                        <div class="cert-title">Backend</div>
-                        <div class="cert-issuer">Node.js Foundation</div>
-                    </div>
-                </div>
-                <h3>Node.js Application Developer</h3>
-                <p class="cert-description">
-                    Professional certification in building scalable server-side applications with Node.js and Express.
-                </p>
-                <div class="cert-footer">
-                    <span class="cert-date">2023</span>
-                    <a href="#" class="cert-link">Verify &rarr;</a>
-                </div>
-            </div>
-
-            <div class="cert-card fade-in" style="animation-delay: 0.5s;">
-                <div class="cert-icon">⭐</div>
-                <div class="cert-badge award-badge">
-                    <div class="cert-badge-inner">
-                        <div class="cert-title">Award</div>
-                        <div class="cert-issuer">Hackathon 2024</div>
-                    </div>
-                </div>
-                <h3>Best UI/UX Design Award</h3>
-                <p class="cert-description">
-                    First place winner for innovative interface design and user experience at the Regional Web Dev Hackathon.
-                </p>
-                <div class="cert-footer">
-                    <span class="cert-date">2024</span>
-                    <span class="cert-badge-text">🥇 Winner</span>
-                </div>
+                <div class="cert-issuer">TryHackMe / HTB</div>
+                <div class="cert-name">Ethical Hacking Path</div>
+                <p class="cert-desc">Completed hands-on penetration testing learning paths including web exploitation, privilege escalation, and red team operations on TryHackMe and Hack The Box.</p>
+                <div class="cert-footer"><span class="cert-year">2023–2024</span><a href="#" class="cert-verify">Verify →</a></div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section id="projects">
+<!-- ─── PROJECTS ─── -->
+<section id="projects" style="background:var(--bg2)">
+    <div class="section-inner">
         <h2>Featured Projects</h2>
+        <div class="section-line"></div>
         <div class="projects-grid">
-            <div class="project-card fade-in">
-                <h3>  Portfolio Site</h3>
-                <p>Modern portfolio with cyber-inspired design, terminal aesthetics, and smooth animations. <span class="project-sign">(by serozr)</span></p>
-                <a href="#" class="project-link">View More &rarr;</a>
+            <div class="proj-card fade-in">
+                <div class="proj-icon">📱</div>
+                <div class="proj-title">Flutter E-Commerce App</div>
+                <p class="proj-desc">Full-featured mobile e-commerce application with Firebase backend, real-time database, authentication, and payment integration. Delivered for a Fiverr client.</p>
+                <div class="proj-tags"><span class="proj-tag">Flutter</span><span class="proj-tag">Firebase</span><span class="proj-tag">Dart</span></div>
+                <a href="https://github.com/monjurmorshedprince" target="_blank" class="proj-link">View on GitHub →</a>
             </div>
-            
-            <div class="project-card fade-in" style="animation-delay: 0.1s;">
-                <h3>💻 Web Applications</h3>
-                <p>Full-stack web applications with modern frameworks, responsive design, and optimized performance.</p>
-                <a href="#" class="project-link">Explore &rarr;</a>
+            <div class="proj-card fade-in" style="animation-delay:0.1s">
+                <div class="proj-icon">🛡️</div>
+                <div class="proj-title">Web Vulnerability Scanner</div>
+                <p class="proj-desc">Python-based automated tool for scanning web applications for common vulnerabilities including XSS, SQLi, and CSRF. Used in security assessments.</p>
+                <div class="proj-tags"><span class="proj-tag">Python</span><span class="proj-tag">Security</span><span class="proj-tag">OWASP</span></div>
+                <a href="https://github.com/monjurmorshedprince" target="_blank" class="proj-link">View on GitHub →</a>
             </div>
-            
-            <div class="project-card fade-in" style="animation-delay: 0.2s;">
-                <h3>🎨 UI/UX Projects</h3>
-                <p>Creative design projects focusing on user experience and modern interface design principles.</p>
-                <a href="#contact" class="project-link">Get Notified &rarr;</a>
+            <div class="proj-card fade-in" style="animation-delay:0.2s">
+                <div class="proj-icon">🔍</div>
+                <div class="proj-title">SOC Dashboard</div>
+                <p class="proj-desc">Custom security operations center dashboard for visualizing log data, threat indicators, and alert queues. Integrates with ELK stack for real-time monitoring.</p>
+                <div class="proj-tags"><span class="proj-tag">ELK Stack</span><span class="proj-tag">SIEM</span><span class="proj-tag">Python</span></div>
+                <a href="https://github.com/monjurmorshedprince" target="_blank" class="proj-link">View on GitHub →</a>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section id="blog">
+<!-- ─── BLOG ─── -->
+<section id="blog">
+    <div class="section-inner">
         <h2>Latest Blog Posts</h2>
+        <div class="section-line"></div>
         <div class="blog-grid">
             <div class="blog-card fade-in">
-                <div class="blog-header">
-                    <div class="blog-date">October 15, 2025</div>
-                </div>
-                <div class="blog-body">
-                    <h3>Building Immersive Web Experiences <span class="post-sign">— serozr</span></h3>
-                    <div class="blog-tags">
-                        <span class="blog-tag">JavaScript</span>
-                        <span class="blog-tag">CSS Animations</span>
-                        <span class="blog-tag">WebGL</span>
-                    </div>
-                    <p>Exploring advanced techniques for creating psychedelic and interactive web experiences using vanilla JavaScript and CSS...</p>
-                    <a href="#" class="project-link">Read More &rarr;</a>
-                </div>
+                <div class="blog-date">// 2025-04-10</div>
+                <div class="blog-title">Setting Up a Home SOC Lab on a Budget</div>
+                <div class="blog-tags"><span class="blog-tag">SOC</span><span class="blog-tag">Blue Team</span><span class="blog-tag">ELK</span></div>
+                <p class="blog-excerpt">How I built a fully functional security operations center at home using Raspberry Pi, open-source SIEM, and free threat intelligence feeds...</p>
+                <a href="#" class="proj-link">Read More →</a>
             </div>
-
-            <div class="blog-card fade-in" style="animation-delay: 0.1s;">
-                <div class="blog-header">
-                    <div class="blog-date">October 10, 2025</div>
-                </div>
-                <div class="blog-body">
-                    <h3>Modern Web Design Trends</h3>
-                    <div class="blog-tags">
-                        <span class="blog-tag">UI/UX</span>
-                        <span class="blog-tag">Design</span>
-                        <span class="blog-tag">Trends</span>
-                    </div>
-                    <p>A deep dive into cyberpunk aesthetics, glassmorphism, and terminal-inspired designs that are shaping the future of web...</p>
-                    <a href="#" class="project-link">Read More &rarr;</a>
-                </div>
+            <div class="blog-card fade-in" style="animation-delay:0.1s">
+                <div class="blog-date">// 2025-03-22</div>
+                <div class="blog-title">Flutter State Management: BLoC vs Riverpod in 2025</div>
+                <div class="blog-tags"><span class="blog-tag">Flutter</span><span class="blog-tag">Dart</span><span class="blog-tag">Architecture</span></div>
+                <p class="blog-excerpt">A practical comparison of the two most popular Flutter state management solutions, with real project examples from my Fiverr work...</p>
+                <a href="#" class="proj-link">Read More →</a>
             </div>
-
-            <div class="blog-card fade-in" style="animation-delay: 0.2s;">
-                <div class="blog-header">
-                    <div class="blog-date">October 5, 2025</div>
-                </div>
-                <div class="blog-body">
-                    <h3>Performance Optimization Tips</h3>
-                    <div class="blog-tags">
-                        <span class="blog-tag">Performance</span>
-                        <span class="blog-tag">Optimization</span>
-                        <span class="blog-tag">Best Practices</span>
-                    </div>
-                    <p>Learn how to optimize heavy animations and interactive elements without sacrificing visual appeal and user experience...</p>
-                    <a href="#" class="project-link">Read More &rarr;</a>
-                </div>
+            <div class="blog-card fade-in" style="animation-delay:0.2s">
+                <div class="blog-date">// 2025-02-14</div>
+                <div class="blog-title">OWASP Top 10: A Pentester's Field Notes</div>
+                <div class="blog-tags"><span class="blog-tag">OWASP</span><span class="blog-tag">PenTest</span><span class="blog-tag">Web Security</span></div>
+                <p class="blog-excerpt">Real-world examples of the OWASP Top 10 vulnerabilities I've encountered during ethical hacking engagements, with remediation tips...</p>
+                <a href="#" class="proj-link">Read More →</a>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section id="contact">
+<!-- ─── CONTACT ─── -->
+<section id="contact" style="background:var(--bg2)">
+    <div class="section-inner">
         <h2>Get In Touch</h2>
-        <div class="contact-container">
-            <div class="contact-grid">
-                <div class="contact-item fade-in">
-                    <div class="contact-icon">📧</div>
-                    <h3>Email</h3>
-                    <a href="mailto:serozr@example.com">serozr@example.com</a>
-                    <div class="contact-note">preferred contact: <strong>serozr</strong></div>
+        <div class="section-line"></div>
+        <div class="contact-grid">
+            <div>
+                <div class="contact-items">
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <h3>Email</h3>
+                        <a href="mailto:dev@monjurmorshed.com">dev@monjurmorshed.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">💻</div>
+                        <h3>GitHub</h3>
+                        <a href="https://github.com/monjurmorshedprince" target="_blank">monjurmorshedprince</a>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">🔗</div>
+                        <h3>LinkedIn</h3>
+                        <a href="https://linkedin.com/in/monjurmorshedprince" target="_blank">monjurmorshedprince</a>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">🌿</div>
+                        <h3>Fiverr</h3>
+                        <a href="https://www.fiverr.com" target="_blank">Level 2 Seller</a>
+                    </div>
                 </div>
-
-                <div class="contact-item fade-in" style="animation-delay: 0.1s;">
-                    <div class="contact-icon">💼</div>
-                    <h3>GitHub</h3>
-                    <a href="https://github.com/serozr" target="_blank">github.com/serozr</a>
-                </div>
-
-                <div class="contact-item fade-in" style="animation-delay: 0.2s;">
-                    <div class="contact-icon">🔗</div>
-                    <h3>LinkedIn</h3>
-                    <a href="https://linkedin.com/in/serozr" target="_blank">linkedin.com/in/serozr</a>
-                </div>
-
-                <div class="contact-item fade-in" style="animation-delay: 0.3s;">
-                    <div class="contact-icon">🐦</div>
-                    <h3>Twitter</h3>
-                    <a href="https://twitter.com/serodxr" target="_blank">@serozr</a>
+                <div class="terminal" style="padding:1rem;">
+                    <div class="terminal-body" style="font-size:0.75rem;">
+                        <p><span class="prompt">$</span> <span class="cmd">ping monjur --message</span></p>
+                        <p class="out">&gt; Available for freelance projects</p>
+                        <p class="out">&gt; Security audits &amp; pen tests</p>
+                        <p class="out">&gt; Flutter app development</p>
+                        <p class="out">&gt; Response time: &lt; 24h</p>
+                    </div>
                 </div>
             </div>
-
-            <div class="contact-form fade-in">
-                <form>
+            <div class="fade-in">
+                <form onsubmit="handleForm(event)">
                     <div class="form-group">
                         <label>$ name --input</label>
-                        <input type="text" placeholder="serozr" required>
-                        <small class="field-sign">Signed by serozr</small>
+                        <input type="text" id="f-name" placeholder="Your name" required>
                     </div>
                     <div class="form-group">
                         <label>$ email --input</label>
-                        <input type="email" placeholder="serozr@example.com" required>
+                        <input type="email" id="f-email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>$ subject --input</label>
+                        <input type="text" id="f-subject" placeholder="Flutter App / Security Audit / Other">
                     </div>
                     <div class="form-group">
                         <label>$ message --input</label>
-                        <textarea placeholder="Your message here..." required></textarea>
+                        <textarea id="f-message" placeholder="Describe your project or inquiry..."></textarea>
                     </div>
-                    <button type="submit" class="submit-btn">Send Message</button>
+                    <button type="submit" class="btn btn-primary" style="width:100%;border:none;cursor:pointer;">Send Message_</button>
                 </form>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <footer>
-    <p>&copy; 2025 <span class="signature">serozr</span>. All rights reserved.</p>
-        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Made with ❤️ using HTML, CSS & JavaScript</p>
-        <p style="margin-top: 0.25rem; font-size: 0.8rem; color: #bbb;">Site signed and maintained by <strong>serozr</strong></p>
-    </footer>
+<!-- ─── FOOTER ─── -->
+<footer>
+    <p>&copy; 2025 <span class="sig">Monjur Morshed</span>. All rights reserved.</p>
+    <p style="margin-top:0.5rem;">Dhaka, Bangladesh 🇧🇩 · Ethical Hacker · SOC Analyst · Flutter Developer</p>
+</footer>
 
+<script>
+// ─── MATRIX RAIN ───
+(function(){
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*<>{}[]|アイウエオカキクケコサシスセソタ';
+    const SIZE = 14;
+    let cols = Math.floor(canvas.width / SIZE);
+    let drops = Array.from({length: cols}, () => Math.random() * -50);
+    function draw() {
+        cols = Math.floor(canvas.width / SIZE);
+        if (drops.length < cols) drops.push(...Array.from({length: cols - drops.length}, () => 0));
+        ctx.fillStyle = 'rgba(0,0,0,0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < cols; i++) {
+            const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
+            const bright = Math.random() > 0.95;
+            ctx.fillStyle = bright ? '#ffffff' : (Math.random() > 0.5 ? '#00d4ff' : '#00ff88');
+            ctx.font = SIZE + 'px Share Tech Mono, monospace';
+            ctx.fillText(ch, i * SIZE, drops[i] * SIZE);
+            if (drops[i] * SIZE > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        }
+    }
+    let raf;
+    function loop() { draw(); raf = requestAnimationFrame(loop); }
+    loop();
+    window._stopMatrix = () => { cancelAnimationFrame(raf); };
+})();
 
-    <script src="src/js/main.js"></script>
+// ─── BOOT LOG LINES ───
+const bootLines = [
+    { prompt: '[SYS ]', text: 'Kernel loaded · arch=x86_64 · secure_boot=ON',  status: 'ok'    },
+    { prompt: '[NET ]', text: 'Establishing encrypted tunnel · AES-256-GCM',    status: 'ok'    },
+    { prompt: '[AUTH]', text: 'Verifying identity · UID-0xMM2025',              status: 'ok'    },
+    { prompt: '[SCAN]', text: 'Running threat intel sweep · 0 anomalies found', status: 'ok'    },
+    { prompt: '[LOAD]', text: 'Mounting portfolio.sh · user=monjur',            status: 'ok'    },
+    { prompt: '[SOC ]', text: 'SIEM feeds online · Splunk · ELK · Zeek',       status: 'ok'    },
+    { prompt: '[EXEC]', text: 'Launching secure interface',                     status: ''      },
+    { prompt: '[DONE]', text: 'ACCESS GRANTED — Welcome, Monjur Morshed',      status: 'ready' },
+];
+
+const logContainer = document.getElementById('bootLines');
+const barEl   = document.getElementById('bootBar');
+const pctEl   = document.getElementById('bootPct');
+let lineIdx = 0;
+
+function showNextLine() {
+    if (lineIdx >= bootLines.length) {
+        barEl.style.width = '100%';
+        pctEl.textContent = '100%';
+        return;
+    }
+    const l = bootLines[lineIdx++];
+    const p = document.createElement('p');
+    p.className = 'boot-line';
+    const statusMap = {
+        ok:    `<span class="boot-ok">[OK]</span>`,
+        ready: `<span class="boot-ready">[GRANTED]</span>`,
+        '':    ''
+    };
+    p.innerHTML = `<span class="boot-prompt">${l.prompt}</span> <span style="color:var(--text)">${l.text}</span>${statusMap[l.status]}`;
+    logContainer.appendChild(p);
+    requestAnimationFrame(() => p.classList.add('visible'));
+    const pct = Math.round((lineIdx / bootLines.length) * 100);
+    barEl.style.width = pct + '%';
+    pctEl.textContent = pct + '%';
+    setTimeout(showNextLine, 320);
+}
+
+// Start log after divider animation (1.8s delay + a bit)
+setTimeout(showNextLine, 2200);
+
+// ─── DISMISS ───
+function dismissBoot() {
+    if (window._stopMatrix) window._stopMatrix();
+    const bs = document.getElementById('bootScreen');
+    bs.classList.add('hidden');
+    setTimeout(() => bs.remove(), 1100);
+}
+document.addEventListener('keydown', dismissBoot, { once: true });
+document.getElementById('bootScreen').addEventListener('click', dismissBoot, { once: true });
+// auto-dismiss after all lines done (~2.2 + 8*320 + 1s buffer)
+setTimeout(dismissBoot, 8500);
+
+// ─── NAV TOGGLE ───
+function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+}
+document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => {
+    document.getElementById('navLinks').classList.remove('open');
+}));
+
+// ─── SCROLL ANIMATIONS ───
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            e.target.querySelectorAll('.skill-fill').forEach(bar => {
+                bar.style.width = bar.dataset.w + '%';
+            });
+        }
+    });
+}, { threshold: 0.15 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+document.querySelectorAll('.skill-fill').forEach(bar => {
+    const so = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) bar.style.width = bar.dataset.w + '%'; });
+    }, { threshold: 0.3 });
+    so.observe(bar);
+});
+
+// ─── CONTACT FORM → MAILTO ───
+function handleForm(e) {
+    e.preventDefault();
+    const name    = document.getElementById('f-name').value;
+    const email   = document.getElementById('f-email').value;
+    const subject = document.getElementById('f-subject').value || 'Portfolio Inquiry';
+    const message = document.getElementById('f-message').value;
+    const body = `Name: ${name}\nFrom: ${email}\n\n${message}`;
+    window.location.href = `mailto:dev@monjurmorshed.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const btn = e.target.querySelector('button');
+    btn.textContent = 'Opening Mail Client ✓';
+    btn.style.background = 'var(--accent2)';
+    btn.style.color = 'var(--bg)';
+    setTimeout(() => { btn.textContent = 'Send Message_'; btn.style.background = ''; btn.style.color = ''; }, 3000);
+}
+</script>
 </body>
 </html>
-
-<!-- End of file - signed: serozr -->
