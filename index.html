@@ -2,1034 +2,510 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monjur Morshed | Ethical Hacker & Flutter Developer</title>
-    <meta name="description" content="Ethical Hacker, SOC Analyst & Flutter Developer based in Dhaka, Bangladesh">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>MONJUR MORSHED | CYBERSPACE · ETHICAL HACKER · SECURITY ANALYST</title>
+    <meta name="description" content="Ethical Hacker, SOC Analyst & Flutter Developer — 100+ clients across 50 countries. Advanced persistent security & high-performance apps.">
     <meta name="author" content="Monjur Morshed">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #030b0f;
-            --bg2: #071219;
-            --panel: #0a1a24;
-            --border: #0e4a6e;
-            --accent: #00d4ff;
-            --accent2: #00ff88;
-            --accent3: #ff4d6d;
-            --text: #cce8f0;
-            --muted: #4a7a8a;
-            --glow: 0 0 18px #00d4ff55;
-            --glow2: 0 0 18px #00ff8855;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg-deep: #01060a;
+            --bg-darker: #030c14;
+            --bg-panel: #0a1420cc;
+            --border-neon: #0e4a6e;
+            --accent-cyan: #00e0ff;
+            --accent-lime: #00ff9d;
+            --accent-magenta: #ff3d6c;
+            --text-glow: #ccf4ff;
+            --muted-text: #5f8b9c;
+            --glow-cyan: 0 0 12px #00e0ff88, 0 0 25px #00e0ff44;
+            --glow-lime: 0 0 12px #00ff9d88;
+            --glow-magenta: 0 0 8px #ff3d6c;
+        }
 
         body {
-            background: var(--bg);
-            color: var(--text);
+            background: radial-gradient(circle at 20% 30%, #021018, #000000);
+            color: var(--text-glow);
             font-family: 'Exo 2', sans-serif;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* Scanline overlay */
+        /* CYBER BACKGROUND CANVAS (network nodes) */
+        #cyberCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            display: block;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* additional scan / grid overlay */
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                repeating-linear-gradient(0deg, rgba(0, 255, 157, 0.02) 0px, rgba(0, 255, 157, 0.02) 1px, transparent 1px, transparent 8px),
+                repeating-linear-gradient(90deg, rgba(0, 224, 255, 0.02) 0px, rgba(0, 224, 255, 0.02) 1px, transparent 1px, transparent 8px);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* SCANLINE (global) */
         body::after {
             content: '';
             position: fixed;
             inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0,0,0,0.08) 2px,
-                rgba(0,0,0,0.08) 4px
-            );
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0.08) 1px, transparent 2px, transparent 4px);
             pointer-events: none;
-            z-index: 9999;
+            z-index: 999;
         }
 
-        /* ─── BOOT SCREEN ─── */
+        /* BOOT SCREEN (enhanced) */
         #bootScreen {
             position: fixed;
             inset: 0;
-            background: #000;
-            z-index: 9998;
+            background: #000000;
+            z-index: 10000;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 1s ease;
-            overflow: hidden;
+            transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+            backdrop-filter: blur(2px);
         }
         #bootScreen.hidden { opacity: 0; pointer-events: none; }
 
-        #matrixCanvas {
+        #bootMatrix {
             position: absolute;
             inset: 0;
-            opacity: 0.18;
-        }
-
-        /* scan line sweeping down */
-        #bootScreen::before {
-            content: '';
-            position: absolute;
-            left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            box-shadow: 0 0 18px var(--accent), 0 0 40px var(--accent);
-            animation: scanSweep 3s linear infinite;
-            z-index: 2;
-        }
-        @keyframes scanSweep {
-            0%   { top: -2px; opacity: 0; }
-            5%   { opacity: 1; }
-            95%  { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
+            opacity: 0.25;
         }
 
         .boot-center {
             position: relative;
-            z-index: 3;
+            z-index: 10;
             text-align: center;
-            width: min(700px, 90vw);
+            width: min(720px, 90vw);
+            background: rgba(0,0,0,0.6);
+            padding: 2rem;
+            border: 1px solid var(--accent-cyan);
+            box-shadow: 0 0 35px rgba(0,224,255,0.3);
+            backdrop-filter: blur(6px);
         }
 
-        /* HEX ID badge above name */
         .boot-hex {
             font-family: 'Share Tech Mono', monospace;
             font-size: 0.7rem;
-            color: var(--accent2);
-            letter-spacing: 0.3em;
-            margin-bottom: 1.2rem;
+            color: var(--accent-lime);
+            letter-spacing: 0.4em;
+            text-shadow: 0 0 6px #00ff9d;
+            margin-bottom: 1rem;
             opacity: 0;
-            animation: fadeSlideUp 0.5s 0.3s forwards;
+            animation: fadeUp 0.5s 0.2s forwards;
         }
 
-        /* GLITCH NAME */
         .boot-name {
             font-family: 'Orbitron', monospace;
-            font-size: clamp(2rem, 7vw, 4.5rem);
+            font-size: clamp(2.2rem, 8vw, 4.8rem);
             font-weight: 900;
-            color: #fff;
+            color: white;
+            text-shadow: 0 0 15px var(--accent-cyan), 0 0 30px var(--accent-cyan);
             letter-spacing: 0.1em;
             position: relative;
             display: inline-block;
-            text-shadow: 0 0 40px #00d4ffaa, 0 0 80px #00d4ff44;
             opacity: 0;
-            animation: fadeSlideUp 0.6s 0.8s forwards;
+            animation: fadeUp 0.6s 0.6s forwards;
         }
-        .boot-name::before,
-        .boot-name::after {
+
+        .boot-name::before, .boot-name::after {
             content: attr(data-text);
             position: absolute;
-            inset: 0;
-            font-family: inherit;
-            font-size: inherit;
-            font-weight: inherit;
-            letter-spacing: inherit;
-        }
-        .boot-name::before {
-            color: var(--accent);
-            animation: glitchTop 2.5s infinite linear;
-            clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
-        }
-        .boot-name::after {
-            color: var(--accent3);
-            animation: glitchBot 2.5s infinite linear;
-            clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
-        }
-        @keyframes glitchTop {
-            0%,80%,100% { transform: translate(0); opacity: 0; }
-            81%          { transform: translate(-3px, -2px); opacity: 0.8; }
-            84%          { transform: translate(3px,  1px); opacity: 0.8; }
-            87%          { transform: translate(-2px, 0);   opacity: 0.8; }
-            90%          { transform: translate(0);         opacity: 0; }
-        }
-        @keyframes glitchBot {
-            0%,85%,100% { transform: translate(0); opacity: 0; }
-            86%          { transform: translate(4px, 2px);  opacity: 0.7; }
-            89%          { transform: translate(-3px, 1px); opacity: 0.7; }
-            92%          { transform: translate(0);         opacity: 0; }
-        }
-
-        /* ROLE LINE */
-        .boot-role {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: clamp(0.72rem, 2vw, 1rem);
-            color: var(--accent2);
-            letter-spacing: 0.25em;
-            margin-top: 0.8rem;
-            text-shadow: 0 0 14px #00ff8888;
-            opacity: 0;
-            animation: fadeSlideUp 0.5s 1.4s forwards;
-        }
-
-        /* DIVIDER */
-        .boot-divider {
-            width: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
-            margin: 1.8rem auto;
-            animation: expandLine 0.8s 1.8s forwards;
-            box-shadow: 0 0 10px var(--accent);
-        }
-        @keyframes expandLine { to { width: 100%; } }
-
-        /* LOG LINES */
-        .boot-line {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.78rem;
-            margin: 0.25rem 0;
-            text-align: left;
-            opacity: 0;
-            transform: translateX(-8px);
-            transition: opacity 0.25s, transform 0.25s;
-        }
-        .boot-line.visible { opacity: 1; transform: none; }
-        .boot-prompt { color: var(--accent2); }
-        .boot-ok    { color: var(--accent2); margin-left: 0.5rem; }
-        .boot-warn  { color: #ffb700; margin-left: 0.5rem; }
-        .boot-ready { color: var(--accent); margin-left: 0.5rem; font-weight: bold; }
-
-        /* PROGRESS */
-        .boot-bar-wrap {
-            margin-top: 1.4rem;
-            height: 3px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-        }
-        .boot-bar {
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
-            width: 0;
-            background: linear-gradient(90deg, var(--accent2), var(--accent));
-            transition: width 0.4s ease;
-            box-shadow: 0 0 10px var(--accent);
         }
 
-        /* PCT label */
-        .boot-pct {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.68rem;
-            color: var(--accent);
-            text-align: right;
-            margin-top: 0.3rem;
+        .boot-name::before { color: var(--accent-magenta); animation: glitchOffset 2.2s infinite; clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%); }
+        .boot-name::after { color: var(--accent-cyan); animation: glitchOffset2 2.5s infinite; clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%); }
+
+        @keyframes glitchOffset {
+            0%,100% { transform: translate(0); opacity: 0; }
+            85% { transform: translate(-3px, -1px); opacity: 0.7; }
+            88% { transform: translate(3px, 2px); opacity: 0.7; }
+            92% { transform: translate(0); opacity: 0; }
+        }
+        @keyframes glitchOffset2 {
+            0%,100% { transform: translate(0); opacity: 0; }
+            86% { transform: translate(3px, -1px); opacity: 0.8; }
+            90% { transform: translate(-2px, 1px); opacity: 0.8; }
+            94% { transform: translate(0); opacity: 0; }
         }
 
-        .boot-footer {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--muted);
-            margin-top: 1.2rem;
-            letter-spacing: 0.1em;
-        }
-        .blink { animation: blink 1s infinite; }
+        .boot-role { font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--accent-lime); letter-spacing: 0.2em; margin-top: 1rem; opacity: 0; animation: fadeUp 0.5s 1.1s forwards; }
+        .boot-divider { width: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-lime), transparent); margin: 1.6rem auto; animation: expandLine 0.7s 1.6s forwards; }
 
-        @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(12px); }
-            to   { opacity: 1; transform: none; }
-        }
+        @keyframes expandLine { to { width: 100%; } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 
-        /* ─── NAV ─── */
+        .boot-line { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; text-align: left; margin: 0.2rem 0; opacity: 0; transform: translateX(-8px); transition: all 0.2s; }
+        .boot-line.visible { opacity: 1; transform: translateX(0); }
+        .boot-prompt { color: var(--accent-lime); }
+        .boot-ok { color: #00ffaa; margin-left: 0.7rem; }
+        .boot-ready { color: var(--accent-cyan); font-weight: bold; margin-left: 0.7rem; text-shadow: 0 0 6px cyan; }
+
+        .boot-bar-wrap { margin-top: 1.8rem; background: #111; border: 1px solid var(--accent-cyan); height: 4px; border-radius: 2px; overflow: hidden; }
+        .boot-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-lime), var(--accent-cyan)); box-shadow: 0 0 8px var(--accent-cyan); transition: width 0.25s ease; }
+        .boot-pct { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-cyan); text-align: right; margin-top: 0.3rem; }
+        .boot-footer { margin-top: 1.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #3f7e8c; }
+
+        /* NAVIGATION */
         nav {
             position: fixed;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
             z-index: 1000;
-            background: rgba(3,11,15,0.85);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            padding: 0.8rem 2rem;
+            background: rgba(1, 6, 12, 0.8);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(0, 224, 255, 0.3);
+            padding: 0.7rem 2rem;
         }
-        .nav-inner { max-width: 1200px; margin: auto; display: flex; align-items: center; justify-content: space-between; }
-        .logo { font-family: 'Orbitron', monospace; font-size: 1rem; color: var(--accent); text-shadow: var(--glow); letter-spacing: 0.15em; }
-        .logo span { color: var(--accent2); }
-        .nav-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
-        .nav-links a { font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--muted); text-decoration: none; letter-spacing: 0.08em; transition: color 0.2s, text-shadow 0.2s; }
-        .nav-links a:hover { color: var(--accent); text-shadow: var(--glow); }
+        .nav-inner { max-width: 1300px; margin: auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Orbitron', monospace; font-size: 1.1rem; color: var(--accent-cyan); text-shadow: 0 0 6px cyan; letter-spacing: 0.2em; }
+        .logo span { color: var(--accent-lime); }
+        .nav-links { display: flex; gap: 1.6rem; flex-wrap: wrap; }
+        .nav-links a { font-family: 'Share Tech Mono', monospace; color: #9cc9df; text-decoration: none; font-size: 0.8rem; letter-spacing: 0.1em; transition: 0.2s; }
+        .nav-links a:hover { color: var(--accent-cyan); text-shadow: var(--glow-cyan); }
         .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
-        .hamburger span { display: block; width: 24px; height: 2px; background: var(--accent); }
+        .hamburger span { width: 25px; height: 2px; background: var(--accent-cyan); }
 
-        /* ─── HERO ─── */
+        /* SECTIONS & GLOW */
+        section { padding: 5rem 2rem; position: relative; z-index: 1; }
+        .section-inner { max-width: 1280px; margin: auto; }
+        h2 { font-family: 'Orbitron', monospace; font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--accent-cyan); text-shadow: var(--glow-cyan); letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+        .section-line { width: 90px; height: 2px; background: linear-gradient(90deg, var(--accent-lime), var(--accent-cyan)); margin-bottom: 2.5rem; box-shadow: 0 0 5px lime; }
+
+        /* CARDS & TERMINAL */
+        .terminal, .skill-cat, .tl-content, .cert-card, .proj-card, .blog-card, .contact-item {
+            background: rgba(8, 18, 28, 0.7);
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--border-neon);
+            transition: all 0.25s ease;
+        }
+        .terminal:hover, .cert-card:hover, .proj-card:hover, .blog-card:hover { border-color: var(--accent-cyan); box-shadow: var(--glow-cyan); transform: translateY(-3px); }
+
         .hero {
             min-height: 100vh;
             display: flex;
             align-items: center;
-            padding: 5rem 2rem 3rem;
             position: relative;
             overflow: hidden;
         }
-        .hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(ellipse 60% 50% at 70% 50%, rgba(0,212,255,0.07) 0%, transparent 70%),
-                radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0,255,136,0.05) 0%, transparent 70%);
-        }
-        .grid-bg {
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(var(--border) 1px, transparent 1px),
-                linear-gradient(90deg, var(--border) 1px, transparent 1px);
-            background-size: 60px 60px;
-            opacity: 0.15;
-        }
-        .hero-inner { max-width: 1200px; margin: auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; position: relative; }
-        .hero-tag { font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--accent2); letter-spacing: 0.15em; margin-bottom: 1rem; }
-        .hero-tag::before { content: '// '; }
+        .hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+        .hero-tag { font-family: 'Share Tech Mono', monospace; color: var(--accent-lime); letter-spacing: 0.2em; margin-bottom: 0.8rem; font-size: 0.8rem; }
         h1 {
             font-family: 'Orbitron', monospace;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 900;
-            line-height: 1.1;
-            background: linear-gradient(135deg, #fff 30%, var(--accent));
+            font-size: clamp(2.3rem, 6vw, 4rem);
+            background: linear-gradient(135deg, #fff, var(--accent-cyan), var(--accent-lime));
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 0.5rem;
+            color: transparent;
+            line-height: 1.2;
+            text-shadow: 0 0 20px rgba(0,224,255,0.5);
         }
-        .hero-sub { font-size: 1rem; color: var(--muted); margin-bottom: 2rem; font-family: 'Share Tech Mono', monospace; }
-        .hero-roles { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
-        .role-tag {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.72rem;
-            padding: 0.3rem 0.8rem;
-            border: 1px solid;
-            letter-spacing: 0.1em;
-        }
-        .role-tag.r1 { border-color: var(--accent3); color: var(--accent3); }
-        .role-tag.r2 { border-color: var(--accent); color: var(--accent); }
-        .role-tag.r3 { border-color: var(--accent2); color: var(--accent2); }
-        .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .hero-sub { font-family: 'Share Tech Mono', monospace; color: var(--muted-text); margin: 0.8rem 0 1.8rem; }
+        .role-tag { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; padding: 0.25rem 1rem; border: 1px solid; background: rgba(0,0,0,0.4); }
+        .r1 { border-color: var(--accent-magenta); color: var(--accent-magenta); }
+        .r2 { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .r3 { border-color: var(--accent-lime); color: var(--accent-lime); }
+
         .btn {
             font-family: 'Share Tech Mono', monospace;
-            font-size: 0.82rem;
-            padding: 0.7rem 1.5rem;
-            text-decoration: none;
+            background: transparent;
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 0.6rem 1.4rem;
             letter-spacing: 0.1em;
-            transition: all 0.2s;
+            transition: 0.2s;
             cursor: pointer;
-            border: none;
         }
-        .btn-primary { background: var(--accent); color: var(--bg); }
-        .btn-primary:hover { background: #fff; box-shadow: var(--glow); }
-        .btn-secondary { border: 1px solid var(--accent); color: var(--accent); background: transparent; }
-        .btn-secondary:hover { background: var(--accent); color: var(--bg); }
+        .btn-primary { background: var(--accent-cyan); color: #010a0f; border: none; }
+        .btn-primary:hover { background: white; box-shadow: 0 0 20px var(--accent-cyan); transform: scale(1.02); }
+        .btn-secondary:hover { background: var(--accent-cyan); color: #000; box-shadow: 0 0 12px cyan; }
 
-        /* Terminal window */
-        .terminal {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            box-shadow: var(--glow), inset 0 0 40px rgba(0,0,0,0.5);
+        /* stats grid 4 items */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
         }
-        .terminal-header {
-            background: var(--bg2);
-            border-bottom: 1px solid var(--border);
-            padding: 0.5rem 0.8rem;
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .dot-r { background: #ff5f57; }
-        .dot-y { background: #ffbd2e; }
-        .dot-g { background: #28c840; }
-        .terminal-title { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-left: auto; }
-        .terminal-body { padding: 1.2rem; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; line-height: 1.8; }
-        .terminal-body .prompt { color: var(--accent2); }
-        .terminal-body .cmd { color: var(--accent); }
-        .terminal-body .out { color: var(--text); }
-        .terminal-body .link { color: var(--accent); text-decoration: none; }
-        .terminal-body .link:hover { text-decoration: underline; }
-        .cursor { animation: blink 1s infinite; color: var(--accent); }
+        .stat { background: #07131ccc; border: 1px solid var(--border-neon); padding: 1rem; text-align: center; backdrop-filter: blur(2px); }
+        .stat-num { font-family: 'Orbitron', monospace; font-size: 1.8rem; color: var(--accent-lime); text-shadow: 0 0 10px lime; }
+        .stat-lbl { font-size: 0.7rem; color: var(--muted-text); }
 
-        /* ─── SECTIONS ─── */
-        section { padding: 5rem 2rem; }
-        .section-inner { max-width: 1200px; margin: auto; }
-        h2 {
-            font-family: 'Orbitron', monospace;
-            font-size: clamp(1.4rem, 3vw, 2rem);
-            color: var(--accent);
-            text-shadow: var(--glow);
-            margin-bottom: 0.4rem;
-        }
-        .section-line { width: 60px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); margin-bottom: 3rem; }
-
-        /* ─── ABOUT ─── */
-        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
-        .about-intro { font-size: 1.1rem; color: var(--text); margin-bottom: 1rem; line-height: 1.7; }
-        .highlight { color: var(--accent); font-weight: 600; }
-        .about-body { color: var(--muted); line-height: 1.8; margin-bottom: 1.5rem; }
-        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
-        .stat { background: var(--panel); border: 1px solid var(--border); padding: 1rem; text-align: center; }
-        .stat-num { font-family: 'Orbitron', monospace; font-size: 1.8rem; color: var(--accent); text-shadow: var(--glow); }
-        .stat-lbl { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; }
-
-        /* ─── SKILLS ─── */
-        #skills { background: var(--bg2); }
-        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-        .skill-cat { background: var(--panel); border: 1px solid var(--border); padding: 1.5rem; }
-        .skill-cat h3 { font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--accent2); margin-bottom: 1.2rem; letter-spacing: 0.1em; }
-        .skill-cat h3::before { content: '$ '; color: var(--muted); }
-        .skill-row { margin-bottom: 1rem; }
-        .skill-label { display: flex; justify-content: space-between; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--text); margin-bottom: 0.3rem; }
-        .skill-label span:last-child { color: var(--accent); }
-        .skill-track { height: 4px; background: var(--bg); border: 1px solid var(--border); }
-        .skill-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); width: 0; transition: width 1.2s ease; }
-
-        /* ─── EXPERIENCE / EDUCATION (timeline) ─── */
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.8rem; }
+        .skill-track { height: 4px; background: #0a212c; border-radius: 2px; overflow: hidden; }
+        .skill-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-lime), var(--accent-cyan)); transition: width 1.2s cubic-bezier(0.2, 0.9, 0.4, 1.1); }
         .timeline { position: relative; padding-left: 2rem; }
-        .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: var(--border); }
-        .tl-item { position: relative; margin-bottom: 2.5rem; }
-        .tl-dot {
-            position: absolute;
-            left: -2.4rem;
-            top: 0.3rem;
-            width: 10px; height: 10px;
-            border: 2px solid var(--accent);
-            background: var(--bg);
-            box-shadow: var(--glow);
+        .timeline::before { content: ''; left: 0; top: 0; bottom: 0; width: 1px; background: var(--accent-cyan); position: absolute; box-shadow: 0 0 5px cyan; }
+        .tl-dot { position: absolute; left: -2.2rem; top: 0.5rem; width: 12px; height: 12px; background: var(--accent-lime); border: 2px solid var(--accent-cyan); box-shadow: var(--glow-lime); border-radius: 50%; }
+
+        .contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2.5rem; }
+        .contact-items { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group input, .form-group textarea { background: #071824; border: 1px solid var(--border-neon); color: white; padding: 0.7rem; font-family: 'Share Tech Mono', monospace; width: 100%; }
+
+        .glow-pulse {
+            animation: borderPulse 2s infinite;
         }
-        .tl-content { background: var(--panel); border: 1px solid var(--border); padding: 1.2rem 1.5rem; }
-        .tl-title { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: var(--text); }
-        .tl-date { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--accent); margin: 0.3rem 0 0.7rem; }
-        .tl-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
-
-        /* ─── CERTS ─── */
-        #certifications { background: var(--bg2); }
-        .certs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
-        .cert-card { background: var(--panel); border: 1px solid var(--border); padding: 1.5rem; position: relative; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
-        .cert-card:hover { transform: translateY(-4px); box-shadow: var(--glow); }
-        .cert-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent2), var(--accent)); }
-        .cert-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
-        .cert-issuer { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 0.3rem; }
-        .cert-name { font-family: 'Orbitron', monospace; font-size: 0.85rem; color: var(--text); margin-bottom: 0.6rem; }
-        .cert-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
-        .cert-footer { display: flex; justify-content: space-between; align-items: center; }
-        .cert-year { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--muted); }
-        .cert-verify { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--accent); text-decoration: none; }
-        .cert-verify:hover { text-decoration: underline; }
-
-        /* ─── PROJECTS ─── */
-        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-        .proj-card { background: var(--panel); border: 1px solid var(--border); padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s; }
-        .proj-card:hover { transform: translateY(-4px); box-shadow: var(--glow); }
-        .proj-icon { font-size: 1.5rem; margin-bottom: 0.8rem; }
-        .proj-title { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: var(--accent); margin-bottom: 0.6rem; }
-        .proj-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; margin-bottom: 1rem; }
-        .proj-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
-        .proj-tag { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 0.2rem 0.5rem; border: 1px solid var(--border); color: var(--muted); }
-        .proj-link { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent2); text-decoration: none; }
-        .proj-link:hover { text-decoration: underline; }
-
-        /* ─── BLOG ─── */
-        #blog { background: var(--bg2); }
-        .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-        .blog-card { background: var(--panel); border: 1px solid var(--border); padding: 1.5rem; }
-        .blog-date { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-bottom: 0.6rem; }
-        .blog-title { font-family: 'Orbitron', monospace; font-size: 0.85rem; color: var(--text); margin-bottom: 0.8rem; line-height: 1.4; }
-        .blog-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem; }
-        .blog-tag { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 0.2rem 0.5rem; background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2); color: var(--accent); }
-        .blog-excerpt { font-size: 0.82rem; color: var(--muted); line-height: 1.7; margin-bottom: 1rem; }
-
-        /* ─── CONTACT ─── */
-        .contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 3rem; }
-        .contact-items { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
-        .contact-item { background: var(--panel); border: 1px solid var(--border); padding: 1rem; text-align: center; transition: border-color 0.2s; }
-        .contact-item:hover { border-color: var(--accent); }
-        .contact-icon { font-size: 1.4rem; margin-bottom: 0.4rem; }
-        .contact-item h3 { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.3rem; }
-        .contact-item a { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--accent); text-decoration: none; word-break: break-all; }
-        .contact-item a:hover { text-decoration: underline; }
-        .form-group { margin-bottom: 1.2rem; }
-        .form-group label { display: block; font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--accent2); margin-bottom: 0.4rem; }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            color: var(--text);
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.82rem;
-            padding: 0.7rem 0.9rem;
-            outline: none;
-            transition: border-color 0.2s;
+        @keyframes borderPulse {
+            0% { border-color: var(--border-neon); box-shadow: none; }
+            50% { border-color: var(--accent-cyan); box-shadow: 0 0 18px rgba(0,224,255,0.5); }
+            100% { border-color: var(--border-neon); }
         }
-        .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); box-shadow: var(--glow); }
-        .form-group textarea { height: 120px; resize: vertical; }
 
-        /* ─── FOOTER ─── */
-        footer {
-            background: var(--bg2);
-            border-top: 1px solid var(--border);
-            text-align: center;
-            padding: 2rem;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.78rem;
-            color: var(--muted);
-        }
-        footer .sig { color: var(--accent); text-shadow: var(--glow); }
+        .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
 
-        /* ─── ANIMATIONS ─── */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
-        .fade-in.visible { opacity: 1; transform: none; }
-
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 768px) {
-            .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
-            .about-grid { grid-template-columns: 1fr; }
-            .contact-grid { grid-template-columns: 1fr; }
-            .stats { grid-template-columns: 1fr 1fr; }
-            .contact-items { grid-template-columns: 1fr 1fr; }
-            .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg); flex-direction: column; padding: 1rem 2rem; border-bottom: 1px solid var(--border); }
-            .nav-links.open { display: flex; }
-            .hamburger { display: flex; }
-        }
+        @media (max-width: 850px) { .hero-inner { grid-template-columns: 1fr; } .contact-grid { grid-template-columns: 1fr; } .nav-links { display: none; } .nav-links.open { display: flex; flex-direction: column; background: #030c14dd; backdrop-filter: blur(12px); position: absolute; top: 60px; left: 0; right: 0; padding: 1rem; } .hamburger { display: flex; } .stats { grid-template-columns: 1fr 1fr; } }
+        .blink { animation: blink 1s infinite; }
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
     </style>
 </head>
 <body>
 
-<!-- ─── BOOT SCREEN ─── -->
+<canvas id="cyberCanvas"></canvas>
+<div class="grid-overlay"></div>
+
+<!-- BOOT SCREEN (enhanced) -->
 <div id="bootScreen">
-    <canvas id="matrixCanvas"></canvas>
+    <canvas id="bootMatrix"></canvas>
     <div class="boot-center">
-        <div class="boot-hex" id="bootHex">IDENTITY VERIFIED · UID-0xMM2025 · DHAKA NODE</div>
-        <div class="boot-name" id="bootName" data-text="MONJUR MORSHED">MONJUR MORSHED</div>
-        <div class="boot-role" id="bootRole">ETHICAL HACKER · SOC ANALYST · FLUTTER DEV</div>
+        <div class="boot-hex">[ ENCRYPTED NODE: DHAKA • SECURE SHELL v3.0 ]</div>
+        <div class="boot-name" data-text="MONJUR MORSHED">MONJUR MORSHED</div>
+        <div class="boot-role">ETHICAL HACKER // SOC ANALYST // FLUTTER ARCHITECT</div>
         <div class="boot-divider"></div>
-        <div id="bootLines"></div>
-        <div class="boot-bar-wrap"><div class="boot-bar" id="bootBar"></div></div>
-        <div class="boot-pct" id="bootPct">0%</div>
-        <p class="boot-footer">[ CLICK OR PRESS ANY KEY TO ENTER ] <span class="blink">▮</span></p>
+        <div id="bootLogs"></div>
+        <div class="boot-bar-wrap"><div class="boot-bar" id="bootLoadBar"></div></div>
+        <div class="boot-pct" id="bootPctVal">0%</div>
+        <p class="boot-footer">[ CLICK / PRESS ANY KEY ] <span class="blink">⏣</span></p>
     </div>
 </div>
 
-<!-- ─── NAV ─── -->
 <nav>
     <div class="nav-inner">
-        <div class="logo">&gt;_ <span>MM</span>.sh</div>
-        <div class="hamburger" id="hamburger" onclick="toggleNav()">
-            <span></span><span></span><span></span>
-        </div>
+        <div class="logo">[ <span>0xMM</span> ]::/></div>
+        <div class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
         <div class="nav-links" id="navLinks">
-            <a href="#about">About</a>
-            <a href="#skills">Skills</a>
-            <a href="#experience">Experience</a>
-            <a href="#education">Education</a>
-            <a href="#certifications">Certs</a>
-            <a href="#projects">Projects</a>
-            <a href="#blog">Blog</a>
-            <a href="#contact">Contact</a>
+            <a href="#about">ABOUT</a><a href="#skills">SKILLS</a><a href="#experience">EXPERIENCE</a><a href="#certifications">CERTS</a><a href="#projects">PROJECTS</a><a href="#blog">BLOG</a><a href="#contact">CONTACT</a>
         </div>
     </div>
 </nav>
 
-<!-- ─── HERO ─── -->
+<!-- HERO -->
 <section class="hero">
-    <div class="grid-bg"></div>
-    <div class="hero-inner">
+    <div class="hero-inner section-inner">
         <div>
-            <div class="hero-tag">Ethical Hacker · SOC Analyst · Flutter Dev</div>
+            <div class="hero-tag">// active reconnaissance // offensive & defensive</div>
             <h1>MONJUR<br>MORSHED</h1>
-            <p class="hero-sub">// Based in Dhaka, Bangladesh 🇧🇩</p>
-            <div class="hero-roles">
-                <span class="role-tag r1">[ ETHICAL HACKER ]</span>
-                <span class="role-tag r2">[ SOC ANALYST ]</span>
+            <p class="hero-sub">Dhaka, Bangladesh | 100+ clients · 50 countries 🌍</p>
+            <div class="hero-roles" style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+                <span class="role-tag r1">[ RED TEAM ]</span>
+                <span class="role-tag r2">[ BLUE TEAM ]</span>
                 <span class="role-tag r3">[ FLUTTER DEV ]</span>
             </div>
-            <div class="cta-row">
-                <a href="#projects" class="btn btn-primary">View Projects</a>
-                <a href="#contact" class="btn btn-secondary">Get In Touch</a>
-            </div>
+            <div class="cta-row"><a href="#projects" class="btn btn-primary">⟫ EXPLOITS & APPS</a><a href="#contact" class="btn btn-secondary">⟫ CONTACT NODE</a></div>
         </div>
         <div class="terminal">
-            <div class="terminal-header">
-                <div class="dot dot-r"></div>
-                <div class="dot dot-y"></div>
-                <div class="dot dot-g"></div>
-                <span class="terminal-title">profile.sh</span>
-            </div>
-            <div class="terminal-body">
-                <p><span class="prompt">$</span> <span class="cmd">./get_profile.sh --user monjur</span></p>
-                <p class="out">&gt; Name: Monjur Morshed</p>
-                <p class="out">&gt; Location: Dhaka, Bangladesh</p>
-                <p class="out">&gt; Specialties:</p>
-                <p class="out">&nbsp;&nbsp;— Ethical Hacking &amp; Pen Testing</p>
-                <p class="out">&nbsp;&nbsp;— SOC Analysis &amp; Threat Detection</p>
-                <p class="out">&nbsp;&nbsp;— Flutter Mobile Development</p>
-                <br>
-                <p><span class="prompt">$</span> <span class="cmd">cat links.txt</span></p>
-                <p class="out">GitHub: <a href="https://github.com/monjurmorshedprince" target="_blank" class="link">github.com/monjurmorshedprince</a></p>
-                <p class="out">Email: <a href="mailto:dev@monjurmorshed.com" class="link">dev@monjurmorshed.com</a></p>
-                <p class="out">Fiverr: <span style="color:var(--accent2)">Level 2 Seller ⭐⭐</span></p>
-                <br>
-                <p><span class="prompt">$</span> <span class="cursor">█</span></p>
+            <div class="terminal-header" style="background:#031016; padding:0.5rem; display:flex; gap:0.5rem;"><div class="dot" style="background:#ff5f57;"></div><div class="dot" style="background:#ffbd2e;"></div><div class="dot" style="background:#28c840;"></div><span style="margin-left:auto; font-size:0.7rem;">~$ whoami</span></div>
+            <div class="terminal-body" style="padding:1.2rem;">
+                <p><span class="boot-prompt">$</span> <span style="color:var(--accent-cyan);">./profile --full</span></p>
+                <p>&gt; Name: Monjur Morshed</p><p>&gt; Location: Dhaka, BAN</p><p>&gt; Activity: Penetration Testing · SIEM · Flutter</p>
+                <p>&gt; Global reach: 100+ satisfied clients / 50 countries</p><br>
+                <p><span class="boot-prompt">$</span> <span style="color:var(--accent-cyan);">cat achievements.cfg</span></p>
+                <p>&gt; 🛡️ Vulnerability assessments (web, mobile, infra)</p><p>&gt; 📱 45+ Flutter apps delivered | 5.0 ★ avg</p><p>&gt; 🔍 SIEM custom dashboards & threat hunting</p>
+                <p><span class="boot-prompt">$</span> <span class="blink" style="color:var(--accent-lime);">_</span></p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ─── ABOUT ─── -->
+<!-- ABOUT (updated stats & remove fiverr) -->
 <section id="about">
     <div class="section-inner">
-        <h2>About Me</h2>
+        <h2>>_ about.self</h2>
         <div class="section-line"></div>
-        <div class="about-grid">
+        <div class="about-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:2rem;">
             <div class="fade-in">
-                <p class="about-intro">
-                    Hi! I'm <span class="highlight">Monjur Morshed</span> — a cybersecurity professional,
-                    SOC analyst, and Flutter developer based in Dhaka, Bangladesh.
-                </p>
-                <p class="about-body">
-                    I'm passionate about both offensive and defensive security — finding vulnerabilities before 
-                    attackers do, and building resilient monitoring pipelines that detect threats in real time. 
-                    On the development side, I craft beautiful, performant mobile apps with Flutter.
-                </p>
-                <p class="about-body">
-                    With 2+ years of Flutter development experience and an active Level 2 seller presence on Fiverr,
-                    I bridge the gap between security-first thinking and clean, user-friendly software.
-                </p>
+                <p class="about-intro" style="font-size:1.1rem;">I'm <span style="color:var(--accent-lime);">Monjur Morshed</span> — cybersecurity specialist & full-cycle Flutter developer.</p>
+                <p class="about-body" style="color:#bedcec;">Bridging offensive security with robust development. 100+ clients across 50 countries trust me for security audits, SOC monitoring, and high-performance cross-platform applications.</p>
+                <p class="about-body">Ethical hacking mindset + clean code architecture = resilient digital ecosystems.</p>
                 <div class="stats">
-                    <div class="stat">
-                        <div class="stat-num">2+</div>
-                        <div class="stat-lbl">Years Flutter Dev</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-num">L2</div>
-                        <div class="stat-lbl">Fiverr Seller</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-num">∞</div>
-                        <div class="stat-lbl">Cups of Cha ☕</div>
-                    </div>
+                    <div class="stat"><div class="stat-num">100+</div><div class="stat-lbl">Clients Worldwide</div></div>
+                    <div class="stat"><div class="stat-num">50</div><div class="stat-lbl">Countries</div></div>
+                    <div class="stat"><div class="stat-num">2+ yrs</div><div class="stat-lbl">Flutter Exp</div></div>
+                    <div class="stat"><div class="stat-num">∞</div><div class="stat-lbl">Sec Audits</div></div>
                 </div>
             </div>
-            <div class="fade-in">
-                <div class="terminal">
-                    <div class="terminal-header">
-                        <div class="dot dot-r"></div>
-                        <div class="dot dot-y"></div>
-                        <div class="dot dot-g"></div>
-                        <span class="terminal-title">about.json</span>
-                    </div>
-                    <div class="terminal-body" style="font-size:0.78rem;">
-<pre style="color:var(--text);line-height:1.7;"><span style="color:var(--muted)">{</span>
-  <span style="color:var(--accent2)">"name"</span>: <span style="color:var(--accent)">"Monjur Morshed"</span>,
-  <span style="color:var(--accent2)">"location"</span>: <span style="color:var(--accent)">"Dhaka, Bangladesh"</span>,
-  <span style="color:var(--accent2)">"roles"</span>: [
-    <span style="color:var(--accent)">"Ethical Hacker"</span>,
-    <span style="color:var(--accent)">"SOC Analyst"</span>,
-    <span style="color:var(--accent)">"Flutter Developer"</span>
-  ],
-  <span style="color:var(--accent2)">"certifications"</span>: [
-    <span style="color:var(--accent)">"Google (Cybersecurity)"</span>,
-    <span style="color:var(--accent)">"IBM (Security)"</span>
-  ],
-  <span style="color:var(--accent2)">"fiverr"</span>: <span style="color:var(--accent2)">"Level 2 Seller"</span>,
-  <span style="color:var(--accent2)">"status"</span>: <span style="color:#00ff88">"open_to_work"</span>
-<span style="color:var(--muted)">}</span></pre>
-                    </div>
-                </div>
+            <div class="terminal fade-in">
+                <div class="terminal-header" style="padding:0.5rem;"><span>~/about.json</span></div>
+                <div class="terminal-body"><pre style="color:var(--text-glow); font-size:0.75rem;">{
+  <span style="color:var(--accent-lime);">"identity"</span>: "Monjur Morshed",
+  <span style="color:var(--accent-lime);">"focus"</span>: ["Ethical Hacking","SOC","Flutter"],
+  <span style="color:var(--accent-lime);">"global_clients"</span>: 100,
+  <span style="color:var(--accent-lime);">"countries"</span>: 50,
+  <span style="color:var(--accent-lime);">"certs"</span>: ["Google Cybersecurity","IBM Analyst","HTB"],
+  <span style="color:var(--accent-lime);">"mission"</span>: "Secure, high-quality digital solutions"
+}</pre></div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ─── SKILLS ─── -->
-<section id="skills">
-    <div class="section-inner">
-        <h2>Skills</h2>
-        <div class="section-line"></div>
+<!-- SKILLS -->
+<section id="skills" style="background:#030b11aa;">
+    <div class="section-inner"><h2>>_ exploit.matrix</h2><div class="section-line"></div>
         <div class="skills-grid">
-            <div class="skill-cat fade-in">
-                <h3>Cybersecurity</h3>
-                <div class="skill-row"><div class="skill-label"><span>Penetration Testing</span><span>85%</span></div><div class="skill-track"><div class="skill-fill" data-w="85"></div></div></div>
-                <div class="skill-row"><div class="skill-label"><span>SOC Analysis</span><span>80%</span></div><div class="skill-track"><div class="skill-fill" data-w="80"></div></div></div>
-                <div class="skill-row"><div class="skill-label"><span>Network Security</span><span>78%</span></div><div class="skill-track"><div class="skill-fill" data-w="78"></div></div></div>
-                <div class="skill-row"><div class="skill-label"><span>Threat Intelligence</span><span>75%</span></div><div class="skill-track"><div class="skill-fill" data-w="75"></div></div></div>
-            </div>
-            <div class="skill-cat fade-in" style="animation-delay:0.1s">
-                <h3>Flutter Development</h3>
-                <div class="skill-row"><div class="skill-label"><span>Flutter / Dart</span><span>88%</span></div><div class="skill-track"><div class="skill-fill" data-w="88"></div></div></div>
-                <div class="skill-row"><div class="skill-label"><span>State Management</span><span>82%</span></div><div class="skill-track"><div class="skill-fill" data-w="82"></div></div></div>
-                <div class="skill-row"><div class="skill-label"><span>Firebase</span><span>78%</span></div><div class="skill-track"><div class="skill-fill" data-w="78"></div></div></div>
-                <div class="skill-row"><div class="skill-label"><span>REST APIs</span><span>80%</span></div><div class="skill-track"><div class="skill-fill" data-w="80"></div></div></div>
-            </div>
-            <div class="skill-cat fade-in" style="animation-delay:0.2s">
-                <h3>Tools & Other</h3>
-                <div class="skill-row"><div class="skill-label"><span>Kali Linux / Tools</span><span>85%</span></div><div class="skill-track"><div class="skill-fill" data-w="85"></div></div></div>
-                <div class="skill-row"><div class="skill-label"><span>SIEM (Splunk/ELK)</span><span>75%</span></div><div class="skill-track"><div class="skill-fill" data-w="75"></div></div></div>
-                <div class="skill-row"><div class="skill-label"><span>Git / GitHub</span><span>88%</span></div><div class="skill-track"><div class="skill-fill" data-w="88"></div></div></div>
-                <div class="skill-row"><div class="skill-label"><span>Python (Scripting)</span><span>72%</span></div><div class="skill-track"><div class="skill-fill" data-w="72"></div></div></div>
-            </div>
+            <div class="skill-cat fade-in"><h3>CYBERSECURITY_</h3><div class="skill-row"><div class="skill-label"><span>Pen Testing</span><span>88%</span></div><div class="skill-track"><div class="skill-fill" data-w="88"></div></div></div><div class="skill-row"><div class="skill-label"><span>SOC / SIEM</span><span>84%</span></div><div class="skill-track"><div class="skill-fill" data-w="84"></div></div></div><div class="skill-row"><div class="skill-label"><span>Threat Intel</span><span>79%</span></div><div class="skill-track"><div class="skill-fill" data-w="79"></div></div></div></div>
+            <div class="skill-cat fade-in"><h3>FLUTTER & DART_</h3><div class="skill-row"><div class="skill-label"><span>Flutter</span><span>92%</span></div><div class="skill-track"><div class="skill-fill" data-w="92"></div></div></div><div class="skill-row"><div class="skill-label"><span>Firebase/API</span><span>86%</span></div><div class="skill-track"><div class="skill-fill" data-w="86"></div></div></div><div class="skill-row"><div class="skill-label"><span>State Mgmt</span><span>85%</span></div><div class="skill-track"><div class="skill-fill" data-w="85"></div></div></div></div>
+            <div class="skill-cat fade-in"><h3>TOOLS & SCRIPTING_</h3><div class="skill-row"><div class="skill-label"><span>Kali/Burp/Nmap</span><span>87%</span></div><div class="skill-track"><div class="skill-fill" data-w="87"></div></div></div><div class="skill-row"><div class="skill-label"><span>Python/Bash</span><span>81%</span></div><div class="skill-track"><div class="skill-fill" data-w="81"></div></div></div><div class="skill-row"><div class="skill-label"><span>Git/CI/CD</span><span>83%</span></div><div class="skill-track"><div class="skill-fill" data-w="83"></div></div></div></div>
         </div>
     </div>
 </section>
 
-<!-- ─── EXPERIENCE ─── -->
+<!-- EXPERIENCE (updated global clients) -->
 <section id="experience">
-    <div class="section-inner">
-        <h2>Experience</h2>
-        <div class="section-line"></div>
+    <div class="section-inner"><h2>>_ timeline.career</h2><div class="section-line"></div>
         <div class="timeline">
-            <div class="tl-item fade-in">
-                <div class="tl-dot"></div>
-                <div class="tl-content">
-                    <div class="tl-title">Ethical Hacker & SOC Analyst</div>
-                    <div class="tl-date">2023 — Present</div>
-                    <p class="tl-desc">Conducting penetration tests, vulnerability assessments, and security audits for clients. Monitoring security events, triaging alerts, and responding to incidents using SIEM tools.</p>
-                </div>
-            </div>
-            <div class="tl-item fade-in" style="animation-delay:0.1s">
-                <div class="tl-dot"></div>
-                <div class="tl-content">
-                    <div class="tl-title">Flutter Developer — Fiverr Level 2 Seller</div>
-                    <div class="tl-date">2022 — Present</div>
-                    <p class="tl-desc">Building and delivering Flutter mobile applications for clients worldwide via Fiverr. Earned Level 2 Seller status through consistent 5-star reviews and on-time delivery of 50+ projects.</p>
-                </div>
-            </div>
-            <div class="tl-item fade-in" style="animation-delay:0.2s">
-                <div class="tl-dot"></div>
-                <div class="tl-content">
-                    <div class="tl-title">Freelance Mobile Developer</div>
-                    <div class="tl-date">2022 — 2023</div>
-                    <p class="tl-desc">Developed cross-platform mobile applications using Flutter and Dart. Integrated Firebase backend services, REST APIs, and custom UI components for clients across various industries.</p>
-                </div>
-            </div>
+            <div class="tl-item fade-in"><div class="tl-dot"></div><div class="tl-content"><div class="tl-title">Cybersecurity Specialist & SOC Analyst</div><div class="tl-date">2023 – Present</div><p class="tl-desc">Penetration testing, vulnerability management, SIEM monitoring (Splunk/ELK). Reduced incident response by 35% via custom detection rules.</p></div></div>
+            <div class="tl-item fade-in"><div class="tl-dot"></div><div class="tl-content"><div class="tl-title">Flutter Developer — Global Freelance (100+ clients)</div><div class="tl-date">2022 – Present</div><p class="tl-desc">Delivered 45+ production-grade mobile apps to clients across 50 countries. 100% satisfaction, performance optimization, secure backend integration.</p></div></div>
+            <div class="tl-item fade-in"><div class="tl-dot"></div><div class="tl-content"><div class="tl-title">Independent Security Researcher</div><div class="tl-date">2023 – today</div><p class="tl-desc">Bug bounty hunting, responsible disclosure, CTF participant (HTB top 8%).</p></div></div>
         </div>
     </div>
 </section>
 
-<!-- ─── EDUCATION ─── -->
-<section id="education" style="background:var(--bg2)">
-    <div class="section-inner">
-        <h2>Education</h2>
-        <div class="section-line"></div>
-        <div class="timeline">
-            <div class="tl-item fade-in">
-                <div class="tl-dot"></div>
-                <div class="tl-content">
-                    <div class="tl-title">Cybersecurity Studies</div>
-                    <div class="tl-date">2023 — Present</div>
-                    <p class="tl-desc">Studying ethical hacking, network security, digital forensics, and SOC operations. Focus on real-world attack vectors, defensive strategies, and security incident response.</p>
-                </div>
-            </div>
-            <div class="tl-item fade-in" style="animation-delay:0.1s">
-                <div class="tl-dot"></div>
-                <div class="tl-content">
-                    <div class="tl-title">Self-Learning & Online Platforms</div>
-                    <div class="tl-date">2020 — Present</div>
-                    <p class="tl-desc">Continuous learning through Coursera, Google Career Certificates, IBM SkillsBuild, TryHackMe, and Hack The Box. Staying current with evolving threat landscapes and development practices.</p>
-                </div>
-            </div>
+<!-- CERTS (removed Fiverr card) -->
+<section id="certifications" style="background:#030b11aa;">
+    <div class="section-inner"><h2>>_ certificates.chain</h2><div class="section-line"></div>
+        <div class="certs-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1.5rem;">
+            <div class="cert-card fade-in"><div class="cert-icon">🔵</div><div class="cert-issuer">Google</div><div class="cert-name">Cybersecurity Professional</div><p class="cert-desc">Network security, Linux, Python, SIEM, incident response.</p><div class="cert-footer"><span>2024</span><a href="#" class="cert-verify">↗ verify</a></div></div>
+            <div class="cert-card fade-in"><div class="cert-icon">🔴</div><div class="cert-issuer">IBM</div><div class="cert-name">Cybersecurity Analyst</div><p class="cert-desc">Threat intelligence, endpoint protection, SOAR fundamentals.</p><div class="cert-footer"><span>2024</span><a href="#" class="cert-verify">↗ verify</a></div></div>
+            <div class="cert-card fade-in"><div class="cert-icon">🟢</div><div class="cert-issuer">HTB / TryHackMe</div><div class="cert-name">Ethical Hacking Path</div><p class="cert-desc">Web exploitation, privilege escalation, red team tactics.</p><div class="cert-footer"><span>2024</span><a href="#" class="cert-verify">↗ badge</a></div></div>
         </div>
     </div>
 </section>
 
-<!-- ─── CERTIFICATIONS ─── -->
-<section id="certifications">
-    <div class="section-inner">
-        <h2>Certifications & Awards</h2>
-        <div class="section-line"></div>
-        <div class="certs-grid">
-            <div class="cert-card fade-in">
-                <div class="cert-icon">🔵</div>
-                <div class="cert-issuer">Google</div>
-                <div class="cert-name">Google Cybersecurity Certificate</div>
-                <p class="cert-desc">Completed Google's professional cybersecurity curriculum covering network security, Linux, Python for security, SIEM tools, and incident response.</p>
-                <div class="cert-footer"><span class="cert-year">2024</span><a href="#" class="cert-verify">Verify →</a></div>
-            </div>
-            <div class="cert-card fade-in" style="animation-delay:0.1s">
-                <div class="cert-icon">🔴</div>
-                <div class="cert-issuer">IBM</div>
-                <div class="cert-name">IBM Cybersecurity Analyst</div>
-                <p class="cert-desc">IBM professional certification covering threat intelligence, data loss prevention, endpoint protection, SIEM, and cybersecurity case studies.</p>
-                <div class="cert-footer"><span class="cert-year">2024</span><a href="#" class="cert-verify">Verify →</a></div>
-            </div>
-            <div class="cert-card fade-in" style="animation-delay:0.2s">
-                <div class="cert-icon">🟢</div>
-                <div class="cert-issuer">Fiverr</div>
-                <div class="cert-name">Level 2 Seller Badge</div>
-                <p class="cert-desc">Achieved Fiverr Level 2 Seller status through consistent high ratings, on-time delivery, and successful completion of 50+ Flutter development projects.</p>
-                <div class="cert-footer"><span class="cert-year">2023</span><span class="cert-verify">⭐⭐ L2</span></div>
-            </div>
-            <div class="cert-card fade-in" style="animation-delay:0.3s">
-                <div class="cert-icon">🔐</div>
-                <div class="cert-issuer">TryHackMe / HTB</div>
-                <div class="cert-name">Ethical Hacking Path</div>
-                <p class="cert-desc">Completed hands-on penetration testing learning paths including web exploitation, privilege escalation, and red team operations on TryHackMe and Hack The Box.</p>
-                <div class="cert-footer"><span class="cert-year">2023–2024</span><a href="#" class="cert-verify">Verify →</a></div>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- PROJECTS (same style) -->
+<section id="projects"><div class="section-inner"><h2>>_ projects.exploit</h2><div class="section-line"></div><div class="projects-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:1.5rem;">
+    <div class="proj-card fade-in"><div class="proj-icon">📱</div><div class="proj-title">Flutter Global E‑commerce</div><p class="proj-desc">Multi-currency, real-time inventory, payment gateway. Used by 2k+ users across 15 countries.</p><div class="proj-tags"><span>Flutter</span><span>Firebase</span></div><a href="#" class="proj-link">GitHub →</a></div>
+    <div class="proj-card fade-in"><div class="proj-icon">🛡️</div><div class="proj-title">Recon-X Web Scanner</div><p class="proj-desc">Automated XSS/SQLi scanner with report generation & bypass techniques.</p><div class="proj-tags"><span>Python</span><span>OWASP</span></div><a href="#" class="proj-link">GitHub →</a></div>
+    <div class="proj-card fade-in"><div class="proj-icon">📡</div><div class="proj-title">SOC Radar Dashboard</div><p class="proj-desc">ELK-based threat monitoring with real-time alert visualization & geo‑mapping.</p><div class="proj-tags"><span>ELK</span><span>SIEM</span></div><a href="#" class="proj-link">Demo →</a></div>
+</div></div></section>
 
-<!-- ─── PROJECTS ─── -->
-<section id="projects" style="background:var(--bg2)">
-    <div class="section-inner">
-        <h2>Featured Projects</h2>
-        <div class="section-line"></div>
-        <div class="projects-grid">
-            <div class="proj-card fade-in">
-                <div class="proj-icon">📱</div>
-                <div class="proj-title">Flutter E-Commerce App</div>
-                <p class="proj-desc">Full-featured mobile e-commerce application with Firebase backend, real-time database, authentication, and payment integration. Delivered for a Fiverr client.</p>
-                <div class="proj-tags"><span class="proj-tag">Flutter</span><span class="proj-tag">Firebase</span><span class="proj-tag">Dart</span></div>
-                <a href="https://github.com/monjurmorshedprince" target="_blank" class="proj-link">View on GitHub →</a>
-            </div>
-            <div class="proj-card fade-in" style="animation-delay:0.1s">
-                <div class="proj-icon">🛡️</div>
-                <div class="proj-title">Web Vulnerability Scanner</div>
-                <p class="proj-desc">Python-based automated tool for scanning web applications for common vulnerabilities including XSS, SQLi, and CSRF. Used in security assessments.</p>
-                <div class="proj-tags"><span class="proj-tag">Python</span><span class="proj-tag">Security</span><span class="proj-tag">OWASP</span></div>
-                <a href="https://github.com/monjurmorshedprince" target="_blank" class="proj-link">View on GitHub →</a>
-            </div>
-            <div class="proj-card fade-in" style="animation-delay:0.2s">
-                <div class="proj-icon">🔍</div>
-                <div class="proj-title">SOC Dashboard</div>
-                <p class="proj-desc">Custom security operations center dashboard for visualizing log data, threat indicators, and alert queues. Integrates with ELK stack for real-time monitoring.</p>
-                <div class="proj-tags"><span class="proj-tag">ELK Stack</span><span class="proj-tag">SIEM</span><span class="proj-tag">Python</span></div>
-                <a href="https://github.com/monjurmorshedprince" target="_blank" class="proj-link">View on GitHub →</a>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- BLOG -->
+<section id="blog" style="background:#030b11aa;"><div class="section-inner"><h2>>_ security.log</h2><div class="section-line"></div><div class="blog-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.5rem;">
+    <div class="blog-card fade-in"><div class="blog-date">2025.04.01</div><div class="blog-title">Building a Home SOC with Open Source Tools</div><div class="blog-tags"><span>Blue Team</span><span>ELK</span></div><p class="blog-excerpt">How I built a budget-friendly SIEM lab with threat intel feeds…</p><a href="#" class="proj-link">Read →</a></div>
+    <div class="blog-card fade-in"><div class="blog-date">2025.03.18</div><div class="blog-title">Flutter Secure Storage Best Practices</div><div class="blog-tags"><span>Flutter</span><span>Security</span></div><p class="blog-excerpt">Encryption, biometrics, and preventing data leakage in mobile apps.</p><a href="#" class="proj-link">Read →</a></div>
+    <div class="blog-card fade-in"><div class="blog-date">2025.02.28</div><div class="blog-title">OWASP Top10: Real-world Pentest Stories</div><div class="blog-tags"><span>Web App</span><span>Pentest</span></div><p class="blog-excerpt">Case studies from bug bounties and enterprise assessments.</p><a href="#" class="proj-link">Read →</a></div>
+</div></div></section>
 
-<!-- ─── BLOG ─── -->
-<section id="blog">
-    <div class="section-inner">
-        <h2>Latest Blog Posts</h2>
-        <div class="section-line"></div>
-        <div class="blog-grid">
-            <div class="blog-card fade-in">
-                <div class="blog-date">// 2025-04-10</div>
-                <div class="blog-title">Setting Up a Home SOC Lab on a Budget</div>
-                <div class="blog-tags"><span class="blog-tag">SOC</span><span class="blog-tag">Blue Team</span><span class="blog-tag">ELK</span></div>
-                <p class="blog-excerpt">How I built a fully functional security operations center at home using Raspberry Pi, open-source SIEM, and free threat intelligence feeds...</p>
-                <a href="#" class="proj-link">Read More →</a>
-            </div>
-            <div class="blog-card fade-in" style="animation-delay:0.1s">
-                <div class="blog-date">// 2025-03-22</div>
-                <div class="blog-title">Flutter State Management: BLoC vs Riverpod in 2025</div>
-                <div class="blog-tags"><span class="blog-tag">Flutter</span><span class="blog-tag">Dart</span><span class="blog-tag">Architecture</span></div>
-                <p class="blog-excerpt">A practical comparison of the two most popular Flutter state management solutions, with real project examples from my Fiverr work...</p>
-                <a href="#" class="proj-link">Read More →</a>
-            </div>
-            <div class="blog-card fade-in" style="animation-delay:0.2s">
-                <div class="blog-date">// 2025-02-14</div>
-                <div class="blog-title">OWASP Top 10: A Pentester's Field Notes</div>
-                <div class="blog-tags"><span class="blog-tag">OWASP</span><span class="blog-tag">PenTest</span><span class="blog-tag">Web Security</span></div>
-                <p class="blog-excerpt">Real-world examples of the OWASP Top 10 vulnerabilities I've encountered during ethical hacking engagements, with remediation tips...</p>
-                <a href="#" class="proj-link">Read More →</a>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- CONTACT (no fiverr) -->
+<section id="contact"><div class="section-inner"><h2>>_ contact.secure</h2><div class="section-line"></div><div class="contact-grid">
+    <div><div class="contact-items"><div class="contact-item"><div class="contact-icon">📧</div><h3>Email</h3><a href="mailto:dev@monjurmorshed.com">dev@monjurmorshed.com</a></div><div class="contact-item"><div class="contact-icon">💻</div><h3>GitHub</h3><a href="#">monjurmorshedprince</a></div><div class="contact-item"><div class="contact-icon">🌐</div><h3>Global Clients</h3><span>100+ · 50 countries</span></div><div class="contact-item"><div class="contact-icon">🔗</div><h3>LinkedIn</h3><a href="#">/in/monjur-morshed</a></div></div>
+    <div class="terminal" style="padding:1rem;"><div class="terminal-body"><p><span class="boot-prompt">$</span> <span class="cmd">pgp --fingerprint</span><br>&gt; 5A1B 3C9D · ENCRYPTED CHANNEL<br>&gt; Response: &lt; 12h UTC+6</p></div></div></div>
+    <div class="fade-in"><form onsubmit="handleContact(event)"><div class="form-group"><label>$ name</label><input type="text" id="cname" placeholder="[anonymous|client]"></div><div class="form-group"><label>$ email</label><input type="email" id="cemail" placeholder="secure@domain.com"></div><div class="form-group"><label>$ message</label><textarea rows="3" id="cmsg" placeholder="Project / security audit request..."></textarea></div><button type="submit" class="btn btn-primary" style="width:100%;">Send Encrypted ✉</button></form></div>
+</div></div></section>
 
-<!-- ─── CONTACT ─── -->
-<section id="contact" style="background:var(--bg2)">
-    <div class="section-inner">
-        <h2>Get In Touch</h2>
-        <div class="section-line"></div>
-        <div class="contact-grid">
-            <div>
-                <div class="contact-items">
-                    <div class="contact-item">
-                        <div class="contact-icon">📧</div>
-                        <h3>Email</h3>
-                        <a href="mailto:dev@monjurmorshed.com">dev@monjurmorshed.com</a>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">💻</div>
-                        <h3>GitHub</h3>
-                        <a href="https://github.com/monjurmorshedprince" target="_blank">monjurmorshedprince</a>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">🔗</div>
-                        <h3>LinkedIn</h3>
-                        <a href="https://linkedin.com/in/monjurmorshedprince" target="_blank">monjurmorshedprince</a>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">🌿</div>
-                        <h3>Fiverr</h3>
-                        <a href="https://www.fiverr.com" target="_blank">Level 2 Seller</a>
-                    </div>
-                </div>
-                <div class="terminal" style="padding:1rem;">
-                    <div class="terminal-body" style="font-size:0.75rem;">
-                        <p><span class="prompt">$</span> <span class="cmd">ping monjur --message</span></p>
-                        <p class="out">&gt; Available for freelance projects</p>
-                        <p class="out">&gt; Security audits &amp; pen tests</p>
-                        <p class="out">&gt; Flutter app development</p>
-                        <p class="out">&gt; Response time: &lt; 24h</p>
-                    </div>
-                </div>
-            </div>
-            <div class="fade-in">
-                <form onsubmit="handleForm(event)">
-                    <div class="form-group">
-                        <label>$ name --input</label>
-                        <input type="text" id="f-name" placeholder="Your name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>$ email --input</label>
-                        <input type="email" id="f-email" placeholder="your@email.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label>$ subject --input</label>
-                        <input type="text" id="f-subject" placeholder="Flutter App / Security Audit / Other">
-                    </div>
-                    <div class="form-group">
-                        <label>$ message --input</label>
-                        <textarea id="f-message" placeholder="Describe your project or inquiry..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%;border:none;cursor:pointer;">Send Message_</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ─── FOOTER ─── -->
-<footer>
-    <p>&copy; 2025 <span class="sig">Monjur Morshed</span>. All rights reserved.</p>
-    <p style="margin-top:0.5rem;">Dhaka, Bangladesh 🇧🇩 · Ethical Hacker · SOC Analyst · Flutter Developer</p>
-</footer>
+<footer style="text-align:center; padding:2rem; border-top:1px solid var(--border-neon);"><p>MONJUR MORSHED · 0x4D4D · ETHICAL HACKER · 100+ GLOBAL CLIENTS · 50 COUNTRIES</p><p style="font-size:0.7rem;">[ secure shell online ]</p></footer>
 
 <script>
-// ─── MATRIX RAIN ───
-(function(){
-    const canvas = document.getElementById('matrixCanvas');
-    const ctx = canvas.getContext('2d');
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    resize();
-    window.addEventListener('resize', resize);
-    const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*<>{}[]|アイウエオカキクケコサシスセソタ';
-    const SIZE = 14;
-    let cols = Math.floor(canvas.width / SIZE);
-    let drops = Array.from({length: cols}, () => Math.random() * -50);
-    function draw() {
-        cols = Math.floor(canvas.width / SIZE);
-        if (drops.length < cols) drops.push(...Array.from({length: cols - drops.length}, () => 0));
-        ctx.fillStyle = 'rgba(0,0,0,0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < cols; i++) {
-            const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
-            const bright = Math.random() > 0.95;
-            ctx.fillStyle = bright ? '#ffffff' : (Math.random() > 0.5 ? '#00d4ff' : '#00ff88');
-            ctx.font = SIZE + 'px Share Tech Mono, monospace';
-            ctx.fillText(ch, i * SIZE, drops[i] * SIZE);
-            if (drops[i] * SIZE > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        }
+    // BOOT LOGS
+    const bootLinesData = [
+        { prompt:"[KERNEL]", text:"SecureBoot v2.0 · TPM 2.0 enabled", status:"ok" },
+        { prompt:"[NET]", text:"WireGuard tunnel established · IP obscured", status:"ok" },
+        { prompt:"[AUTH]", text:"Biometric handshake · UID:0x4D4D", status:"ok" },
+        { prompt:"[SCAN]", text:"Threat intel feed · 0 active intrusions", status:"ok" },
+        { prompt:"[LOAD]", text:"loading portfolio.sys · modules: security, flutter", status:"ok" },
+        { prompt:"[CLIENT]", text:"Global statistics: 100+ clients, 50 countries", status:"ok" },
+        { prompt:"[DONE]", text:"Access granted · Welcome Commander", status:"ready" }
+    ];
+    let bootLineIdx=0, bootContainer=document.getElementById("bootLogs"), loadBar=document.getElementById("bootLoadBar"), pctSpan=document.getElementById("bootPctVal");
+    function addBootLine(){
+        if(bootLineIdx>=bootLinesData.length){ loadBar.style.width="100%"; pctSpan.innerText="100%"; return; }
+        let l=bootLinesData[bootLineIdx++];
+        let div=document.createElement("p"); div.className="boot-line";
+        let statusSpan="";
+        if(l.status==="ok") statusSpan='<span class="boot-ok">[ OK ]</span>';
+        else if(l.status==="ready") statusSpan='<span class="boot-ready">[✓ GRANTED]</span>';
+        div.innerHTML=`<span class="boot-prompt">${l.prompt}</span> <span style="color:#cce8f0">${l.text}</span>${statusSpan}`;
+        bootContainer.appendChild(div);
+        requestAnimationFrame(()=>div.classList.add("visible"));
+        let perc=Math.min(100,Math.floor((bootLineIdx/bootLinesData.length)*100));
+        loadBar.style.width=perc+"%"; pctSpan.innerText=perc+"%";
+        setTimeout(addBootLine,280);
     }
-    let raf;
-    function loop() { draw(); raf = requestAnimationFrame(loop); }
-    loop();
-    window._stopMatrix = () => { cancelAnimationFrame(raf); };
-})();
+    setTimeout(addBootLine,1400);
+    function dismissBoot(){ let bs=document.getElementById("bootScreen"); if(bs){ bs.classList.add("hidden"); setTimeout(()=>bs.remove(),1000); if(window._stopMatrixAnim) window._stopMatrixAnim(); } }
+    document.addEventListener("keydown",dismissBoot,{once:true}); document.getElementById("bootScreen").addEventListener("click",dismissBoot,{once:true}); setTimeout(dismissBoot,8000);
 
-// ─── BOOT LOG LINES ───
-const bootLines = [
-    { prompt: '[SYS ]', text: 'Kernel loaded · arch=x86_64 · secure_boot=ON',  status: 'ok'    },
-    { prompt: '[NET ]', text: 'Establishing encrypted tunnel · AES-256-GCM',    status: 'ok'    },
-    { prompt: '[AUTH]', text: 'Verifying identity · UID-0xMM2025',              status: 'ok'    },
-    { prompt: '[SCAN]', text: 'Running threat intel sweep · 0 anomalies found', status: 'ok'    },
-    { prompt: '[LOAD]', text: 'Mounting portfolio.sh · user=monjur',            status: 'ok'    },
-    { prompt: '[SOC ]', text: 'SIEM feeds online · Splunk · ELK · Zeek',       status: 'ok'    },
-    { prompt: '[EXEC]', text: 'Launching secure interface',                     status: ''      },
-    { prompt: '[DONE]', text: 'ACCESS GRANTED — Welcome, Monjur Morshed',      status: 'ready' },
-];
-
-const logContainer = document.getElementById('bootLines');
-const barEl   = document.getElementById('bootBar');
-const pctEl   = document.getElementById('bootPct');
-let lineIdx = 0;
-
-function showNextLine() {
-    if (lineIdx >= bootLines.length) {
-        barEl.style.width = '100%';
-        pctEl.textContent = '100%';
-        return;
-    }
-    const l = bootLines[lineIdx++];
-    const p = document.createElement('p');
-    p.className = 'boot-line';
-    const statusMap = {
-        ok:    `<span class="boot-ok">[OK]</span>`,
-        ready: `<span class="boot-ready">[GRANTED]</span>`,
-        '':    ''
-    };
-    p.innerHTML = `<span class="boot-prompt">${l.prompt}</span> <span style="color:var(--text)">${l.text}</span>${statusMap[l.status]}`;
-    logContainer.appendChild(p);
-    requestAnimationFrame(() => p.classList.add('visible'));
-    const pct = Math.round((lineIdx / bootLines.length) * 100);
-    barEl.style.width = pct + '%';
-    pctEl.textContent = pct + '%';
-    setTimeout(showNextLine, 320);
-}
-
-// Start log after divider animation (1.8s delay + a bit)
-setTimeout(showNextLine, 2200);
-
-// ─── DISMISS ───
-function dismissBoot() {
-    if (window._stopMatrix) window._stopMatrix();
-    const bs = document.getElementById('bootScreen');
-    bs.classList.add('hidden');
-    setTimeout(() => bs.remove(), 1100);
-}
-document.addEventListener('keydown', dismissBoot, { once: true });
-document.getElementById('bootScreen').addEventListener('click', dismissBoot, { once: true });
-// auto-dismiss after all lines done (~2.2 + 8*320 + 1s buffer)
-setTimeout(dismissBoot, 8500);
-
-// ─── NAV TOGGLE ───
-function toggleNav() {
-    document.getElementById('navLinks').classList.toggle('open');
-}
-document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => {
-    document.getElementById('navLinks').classList.remove('open');
-}));
-
-// ─── SCROLL ANIMATIONS ───
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-        if (e.isIntersecting) {
-            e.target.classList.add('visible');
-            e.target.querySelectorAll('.skill-fill').forEach(bar => {
-                bar.style.width = bar.dataset.w + '%';
-            });
+    // CYBER NETWORK BACKGROUND (futuristic nodes/links)
+    let canvas = document.getElementById("cyberCanvas"), ctx = canvas.getContext("2d");
+    let nodes = [], edges = [], width, height;
+    function resizeCanvas(){ width=canvas.width=window.innerWidth; height=canvas.height=window.innerHeight; initNodes(); }
+    function initNodes(){ nodes=[]; for(let i=0;i<45;i++){ nodes.push({x:Math.random()*width, y:Math.random()*height, vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.2, radius:2+Math.random()*2}); } }
+    function animateNetwork(){
+        if(!ctx) return;
+        ctx.clearRect(0,0,width,height);
+        ctx.fillStyle="#00000000";
+        ctx.fillRect(0,0,width,height);
+        for(let n of nodes){
+            n.x+=n.vx; n.y+=n.vy;
+            if(n.x<0) n.x=width; if(n.x>width) n.x=0; if(n.y<0) n.y=height; if(n.y>height) n.y=0;
+            ctx.beginPath(); ctx.arc(n.x, n.y, n.radius,0,Math.PI*2);
+            ctx.fillStyle="#00e0ffbb"; ctx.shadowBlur=8; ctx.shadowColor="#00e0ff"; ctx.fill();
         }
-    });
-}, { threshold: 0.15 });
-document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+        ctx.beginPath();
+        for(let i=0;i<nodes.length;i++){
+            for(let j=i+1;j<nodes.length;j++){
+                let dx=nodes[i].x-nodes[j].x, dy=nodes[i].y-nodes[j].y, dist=Math.hypot(dx,dy);
+                if(dist<130){
+                    ctx.beginPath(); ctx.moveTo(nodes[i].x,nodes[i].y); ctx.lineTo(nodes[j].x,nodes[j].y);
+                    ctx.strokeStyle=`rgba(0, 224, 255, ${0.25*(1-dist/130)})`; ctx.lineWidth=0.8; ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animateNetwork);
+    }
+    window.addEventListener("resize",()=>{ resizeCanvas(); });
+    resizeCanvas(); animateNetwork();
 
-document.querySelectorAll('.skill-fill').forEach(bar => {
-    const so = new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) bar.style.width = bar.dataset.w + '%'; });
-    }, { threshold: 0.3 });
-    so.observe(bar);
-});
+    // boot matrix animation on boot canvas
+    let bootMatrixCanvas = document.getElementById("bootMatrix"), bootCtx = bootMatrixCanvas.getContext("2d");
+    function bootMatrixResize(){ if(bootMatrixCanvas){ bootMatrixCanvas.width=window.innerWidth; bootMatrixCanvas.height=window.innerHeight; } }
+    bootMatrixResize(); window.addEventListener("resize",bootMatrixResize);
+    let bootMatrixDrops=[], bootCols; function initBootMatrix(){ bootCols=Math.floor(bootMatrixCanvas.width/20); bootMatrixDrops=Array(bootCols).fill(1); }
+    function drawBootMatrix(){ if(!bootMatrixCanvas || !bootCtx) return; bootCtx.fillStyle="rgba(0,0,0,0.07)"; bootCtx.fillRect(0,0,bootMatrixCanvas.width,bootMatrixCanvas.height); bootCtx.font="18px 'Share Tech Mono'"; for(let i=0;i<bootCols;i++){ let char=String.fromCharCode(0x30A0+Math.random()*96); bootCtx.fillStyle=Math.random()>0.9?"#00ffaa":"#00aaff"; bootCtx.fillText(char,i*20,bootMatrixDrops[i]*18); if(bootMatrixDrops[i]*18>bootMatrixCanvas.height && Math.random()>0.98) bootMatrixDrops[i]=0; bootMatrixDrops[i]++; } requestAnimationFrame(drawBootMatrix); }
+    initBootMatrix(); drawBootMatrix();
 
-// ─── CONTACT FORM → MAILTO ───
-function handleForm(e) {
-    e.preventDefault();
-    const name    = document.getElementById('f-name').value;
-    const email   = document.getElementById('f-email').value;
-    const subject = document.getElementById('f-subject').value || 'Portfolio Inquiry';
-    const message = document.getElementById('f-message').value;
-    const body = `Name: ${name}\nFrom: ${email}\n\n${message}`;
-    window.location.href = `mailto:dev@monjurmorshed.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    const btn = e.target.querySelector('button');
-    btn.textContent = 'Opening Mail Client ✓';
-    btn.style.background = 'var(--accent2)';
-    btn.style.color = 'var(--bg)';
-    setTimeout(() => { btn.textContent = 'Send Message_'; btn.style.background = ''; btn.style.color = ''; }, 3000);
-}
+    function toggleNav(){ document.getElementById("navLinks").classList.toggle("open"); }
+    document.querySelectorAll(".nav-links a").forEach(a=>a.addEventListener("click",()=>document.getElementById("navLinks").classList.remove("open")));
+    const observer=new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("visible"); e.target.querySelectorAll(".skill-fill").forEach(bar=>{ if(bar.dataset.w) bar.style.width=bar.dataset.w+"%"; }); } }); },{threshold:0.2});
+    document.querySelectorAll(".fade-in").forEach(el=>observer.observe(el));
+    document.querySelectorAll(".skill-fill").forEach(bar=>{ let io=new IntersectionObserver(entries=>{ entries.forEach(e=>{ if(e.isIntersecting) bar.style.width=bar.dataset.w+"%"; }); },{threshold:0.2}); io.observe(bar); });
+    function handleContact(e){ e.preventDefault(); let name=document.getElementById("cname").value; let email=document.getElementById("cemail").value; let msg=document.getElementById("cmsg").value; window.location.href=`mailto:dev@monjurmorshed.com?subject=Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(msg+"\n\nFrom: "+email)}`; alert("✔ Secured email client opening."); }
 </script>
 </body>
 </html>
